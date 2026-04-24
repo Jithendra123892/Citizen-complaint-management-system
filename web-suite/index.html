@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CitizenConnect - Jansunwai Portal | Government of India</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933;
+            --gov-white: #FFFFFF;
+            --gov-green: #138808;
+            --gov-navy: #003087;
+            --gov-navy-dark: #1a1a6e;
+            --gov-navy-light: #0044b0;
+            --gov-blue-bar: #003380;
+            --gov-gray-bg: #f0f4f8;
+            --gov-gray-light: #e8edf2;
+            --gov-text: #1a1a1a;
+            --gov-text-light: #4b4b4b;
+            --gov-border: #cccccc;
+            --gov-footer: #1B2A6B;
+            --gov-footer-dark: #111d4e;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body { font-family: 'Noto Sans', sans-serif; background: #fff; color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+        a:hover { text-decoration: underline; color: var(--gov-navy-light); }
+        img { max-width: 100%; }
+
+        /* ── TRICOLOR STRIP ── */
+        .tricolor-strip {
+            height: 5px;
+            background: linear-gradient(90deg,
+                #FF9933 0%, #FF9933 33.33%,
+                #fff 33.33%, #fff 66.66%,
+                #138808 66.66%, #138808 100%);
+        }
+
+        /* ── UTILITY BAR ── */
+        .utility-bar {
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            padding: 4px 0;
+            font-size: 0.78rem;
+        }
+        .utility-bar .inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1rem;
+            display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+        }
+        .utility-bar a { color: var(--gov-navy); margin-right: 10px; }
+        .utility-bar a:hover { text-decoration: underline; }
+        .utility-right { display: flex; align-items: center; gap: 12px; }
+        .font-ctrl button {
+            border: 1px solid #888; background: #fff; cursor: pointer;
+            padding: 1px 6px; font-size: 0.75rem; margin-left: 2px; font-family: inherit;
+        }
+        .font-ctrl button:hover { background: #e0e0e0; }
+        .lang-switch { display: flex; gap: 4px; }
+        .lang-switch button {
+            border: 1px solid var(--gov-navy); background: #fff; color: var(--gov-navy);
+            padding: 1px 8px; font-size: 0.78rem; cursor: pointer; font-family: inherit;
+        }
+        .lang-switch button.active, .lang-switch button:hover {
+            background: var(--gov-navy); color: #fff;
+        }
+
+        /* ── HEADER ── */
+        .site-header {
+            background: #fff;
+            border-bottom: 3px solid var(--gov-saffron);
+            padding: 14px 0;
+        }
+        .site-header .inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; align-items: center; gap: 1.5rem;
+        }
+        .emblem-wrap img { width: 70px; height: 70px; object-fit: contain; }
+        .emblem-svg { width: 70px; height: 70px; flex-shrink: 0; }
+        .portal-title { flex: 1; }
+        .portal-title .ministry {
+            font-size: 0.78rem; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;
+        }
+        .portal-title h1 {
+            font-size: 1.45rem; font-weight: 700; color: var(--gov-navy); line-height: 1.2;
+        }
+        .portal-title .tagline {
+            font-size: 0.82rem; color: var(--gov-text-light); margin-top: 2px;
+        }
+        .header-right { text-align: right; }
+        .header-right .helpline { font-size: 0.8rem; color: #555; }
+        .header-right .helpline strong { color: var(--gov-navy); font-size: 1rem; }
+        .header-right .nic-badge {
+            font-size: 0.7rem; color: #777; margin-top: 4px;
+        }
+
+        /* ── NAV BAR ── */
+        .main-nav {
+            background: var(--gov-blue-bar);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .main-nav .inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; align-items: stretch;
+        }
+        .main-nav a {
+            display: block; color: #fff; padding: 12px 16px;
+            font-size: 0.9rem; font-weight: 500; white-space: nowrap;
+            text-decoration: none; border-right: 1px solid rgba(255,255,255,0.15);
+            transition: background 0.2s;
+        }
+        .main-nav a:first-child { border-left: 1px solid rgba(255,255,255,0.15); }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); color: #fff; }
+        .nav-spacer { flex: 1; }
+        .nav-action-btns { display: flex; align-items: center; gap: 8px; padding: 8px 0; }
+        .btn-nav-signin {
+            padding: 6px 16px; border: 2px solid #fff; color: #fff;
+            background: transparent; font-size: 0.85rem; font-weight: 600;
+            cursor: pointer; font-family: inherit; text-decoration:none; display:inline-block;
+        }
+        .btn-nav-signin:hover { background: rgba(255,255,255,0.15); text-decoration:none; color:#fff; }
+        .btn-nav-register {
+            padding: 6px 16px; border: 2px solid var(--gov-saffron);
+            background: var(--gov-saffron); color: #fff;
+            font-size: 0.85rem; font-weight: 600; cursor: pointer;
+            font-family: inherit; text-decoration:none; display:inline-block;
+        }
+        .btn-nav-register:hover { background: #e68a2e; text-decoration:none; color:#fff; }
+
+        /* ── HERO ── */
+        .hero {
+            background: linear-gradient(135deg, #f8f9ff 0%, #eef2fb 100%);
+            border-bottom: 1px solid var(--gov-border);
+            padding: 50px 0 40px;
+        }
+        .hero .inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3rem; align-items: center;
+        }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #fff3e0; border: 1px solid var(--gov-saffron);
+            color: #c87000; padding: 4px 12px; font-size: 0.8rem; font-weight: 600;
+            margin-bottom: 16px; letter-spacing: 0.3px;
+        }
+        .hero-badge .dot { width: 8px; height: 8px; background: var(--gov-green); border-radius: 50%; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+        .hero h2 {
+            font-size: 2.2rem; font-weight: 700; color: var(--gov-navy);
+            line-height: 1.25; margin-bottom: 14px;
+        }
+        .hero h2 span { color: var(--gov-saffron); }
+        .hero p {
+            font-size: 1rem; color: var(--gov-text-light); margin-bottom: 24px; line-height: 1.75;
+        }
+        .hero-cta { display: flex; gap: 12px; flex-wrap: wrap; }
+        .btn-primary {
+            padding: 12px 28px; background: var(--gov-saffron); color: #fff;
+            font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer;
+            font-family: inherit; text-decoration: none; display: inline-block;
+            transition: background 0.2s;
+        }
+        .btn-primary:hover { background: #e68a2e; color:#fff; text-decoration:none; }
+        .btn-secondary-hero {
+            padding: 12px 28px; background: transparent; color: var(--gov-navy);
+            font-weight: 600; font-size: 0.95rem; border: 2px solid var(--gov-navy);
+            cursor: pointer; font-family: inherit; text-decoration: none; display: inline-block;
+            transition: all 0.2s;
+        }
+        .btn-secondary-hero:hover { background: var(--gov-navy); color: #fff; text-decoration:none; }
+        .hero-visual-card {
+            background: #fff; border: 1px solid var(--gov-border);
+            border-top: 4px solid var(--gov-navy); padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,50,0.08);
+        }
+        .hero-visual-card h3 {
+            font-size: 1rem; color: var(--gov-navy); font-weight: 700; margin-bottom: 16px;
+            padding-bottom: 8px; border-bottom: 1px solid #e0e0e0;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .complaint-row {
+            padding: 12px 0; border-bottom: 1px solid #f0f0f0;
+            display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+        }
+        .complaint-row:last-child { border-bottom: none; }
+        .c-id { font-size: 0.75rem; color: #888; font-family: monospace; }
+        .c-title { font-size: 0.9rem; color: var(--gov-text); font-weight: 500; margin: 2px 0; }
+        .c-meta { font-size: 0.75rem; color: #888; }
+        .status-badge {
+            padding: 3px 10px; font-size: 0.72rem; font-weight: 600;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .status-resolved { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+        .status-progress { background: #e3f2fd; color: #0d47a1; border: 1px solid #90caf9; }
+        .status-pending  { background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; }
+
+        /* ── STATS STRIP ── */
+        .stats-strip {
+            background: var(--gov-navy);
+            color: #fff; padding: 28px 0;
+        }
+        .stats-strip .inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; text-align: center;
+        }
+        .stat-item .stat-val {
+            font-size: 2.25rem; font-weight: 700; color: var(--gov-saffron);
+        }
+        .stat-item .stat-label { font-size: 0.9rem; color: rgba(255,255,255,0.85); margin-top: 4px; }
+
+        /* ── SECTIONS SHARED ── */
+        .section { padding: 56px 0; }
+        .section.gray-bg { background: var(--gov-gray-bg); }
+        .section-inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+        .section-heading {
+            text-align: center; margin-bottom: 36px;
+        }
+        .section-heading .label {
+            display: inline-block; background: #e8efff; color: var(--gov-navy);
+            padding: 3px 14px; font-size: 0.78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+            border-left: 4px solid var(--gov-saffron);
+        }
+        .section-heading h2 {
+            font-size: 1.85rem; font-weight: 700; color: var(--gov-navy); margin-bottom: 8px;
+        }
+        .section-heading p { font-size: 0.95rem; color: var(--gov-text-light); max-width: 560px; margin: 0 auto; }
+
+        /* ── ABOUT / STORY CARDS ── */
+        .about-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; }
+        .about-card {
+            background: #fff; border: 1px solid var(--gov-border);
+            border-top: 4px solid var(--gov-navy); padding: 28px 24px;
+        }
+        .about-card .icon {
+            width: 52px; height: 52px; background: #e8efff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.6rem; margin-bottom: 16px;
+        }
+        .about-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--gov-navy); margin-bottom: 10px; }
+        .about-card p { font-size: 0.9rem; color: var(--gov-text-light); line-height: 1.7; }
+
+        /* ── FEATURES ── */
+        .features-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+        .feature-card {
+            background: #fff; border: 1px solid var(--gov-border);
+            border-left: 5px solid var(--gov-navy);
+            padding: 24px; display: flex; gap: 16px; align-items: flex-start;
+        }
+        .feature-card.saffron { border-left-color: var(--gov-saffron); }
+        .feature-card.green   { border-left-color: var(--gov-green); }
+        .feature-card.navy    { border-left-color: var(--gov-navy); }
+        .feature-card .f-icon {
+            width: 48px; height: 48px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem; background: var(--gov-gray-bg);
+        }
+        .feature-card h3 { font-size: 1rem; font-weight: 700; color: var(--gov-navy); margin-bottom: 6px; }
+        .feature-card p  { font-size: 0.88rem; color: var(--gov-text-light); line-height: 1.65; }
+
+        /* ── HOW IT WORKS ── */
+        .steps-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 20px; text-align: center; }
+        .step-card { padding: 24px 16px; }
+        .step-number {
+            width: 56px; height: 56px; border-radius: 50%;
+            background: var(--gov-saffron); color: #fff;
+            font-size: 1.5rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px; border: 3px solid #fff;
+            box-shadow: 0 0 0 3px var(--gov-saffron);
+        }
+        .step-card h3 { font-size: 1rem; font-weight: 700; color: var(--gov-navy); margin-bottom: 8px; }
+        .step-card p  { font-size: 0.87rem; color: var(--gov-text-light); line-height: 1.65; }
+
+        /* ── TESTIMONIALS ── */
+        .testi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+        .testi-card {
+            background: #fff; border: 1px solid var(--gov-border);
+            padding: 24px;
+        }
+        .testi-stars { color: var(--gov-saffron); font-size: 1rem; margin-bottom: 10px; }
+        .testi-card blockquote {
+            font-size: 0.9rem; color: var(--gov-text-light); line-height: 1.7;
+            margin-bottom: 16px; font-style: italic;
+        }
+        .testi-author { display: flex; align-items: center; gap: 12px; }
+        .testi-avatar {
+            width: 42px; height: 42px; border-radius: 50%;
+            background: var(--gov-navy); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 0.9rem;
+        }
+        .testi-info strong { display: block; font-size: 0.9rem; color: var(--gov-navy); }
+        .testi-info span   { font-size: 0.78rem; color: #888; }
+
+        /* ── CTA BOX ── */
+        .cta-box-wrap { padding: 56px 0; background: #fff; }
+        .cta-box {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+        }
+        .cta-inner {
+            background: var(--gov-navy);
+            padding: 48px 40px; text-align: center; position: relative; overflow: hidden;
+        }
+        .cta-inner::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%);
+        }
+        .cta-inner h2 { font-size: 1.8rem; font-weight: 700; color: #fff; margin-bottom: 10px; }
+        .cta-inner p  { color: rgba(255,255,255,0.8); font-size: 1rem; margin-bottom: 24px; }
+        .cta-buttons  { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn-cta-white {
+            padding: 12px 32px; background: #fff; color: var(--gov-navy);
+            font-weight: 700; text-decoration: none; font-size: 0.95rem;
+        }
+        .btn-cta-white:hover { background: #e8efff; text-decoration:none; color: var(--gov-navy); }
+        .btn-cta-outline {
+            padding: 12px 32px; background: transparent; color: #fff;
+            border: 2px solid rgba(255,255,255,0.5); font-weight: 600;
+            text-decoration: none; font-size: 0.95rem;
+        }
+        .btn-cta-outline:hover { border-color: #fff; background: rgba(255,255,255,0.1); text-decoration:none; color:#fff; }
+
+        /* ── FOOTER ── */
+        .footer { background: var(--gov-footer); color: #cdd5e0; }
+        .footer-main {
+            max-width: 1200px; margin: 0 auto; padding: 40px 1.5rem 24px;
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 32px;
+        }
+        .footer-brand { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .footer-brand span { font-size: 1.1rem; font-weight: 700; color: #fff; }
+        .footer-about p { font-size: 0.85rem; line-height: 1.7; margin-bottom: 14px; }
+        .footer-col h4 { font-size: 0.9rem; font-weight: 700; color: #fff; margin-bottom: 14px; padding-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.15); }
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 8px; }
+        .footer-col a { color: #cdd5e0; font-size: 0.85rem; text-decoration: none; }
+        .footer-col a:hover { color: var(--gov-saffron); }
+        .footer-bottom {
+            background: var(--gov-footer-dark);
+            text-align: center; padding: 14px 1.5rem;
+            font-size: 0.78rem; color: #aab;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .footer-bottom a { color: #9be; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .hero .inner { grid-template-columns: 1fr; }
+            .hero-visual-card { display: none; }
+            .stats-strip .inner { grid-template-columns: repeat(2,1fr); }
+            .about-grid { grid-template-columns: 1fr 1fr; }
+            .features-grid { grid-template-columns: 1fr; }
+            .steps-grid { grid-template-columns: repeat(2,1fr); }
+            .testi-grid { grid-template-columns: 1fr 1fr; }
+            .footer-main { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 600px) {
+            .about-grid, .testi-grid { grid-template-columns: 1fr; }
+            .steps-grid { grid-template-columns: 1fr 1fr; }
+            .stats-strip .inner { grid-template-columns: repeat(2,1fr); }
+            .main-nav .inner { flex-wrap: wrap; }
+            .main-nav a { font-size: 0.8rem; padding: 10px 10px; }
+            .hero h2 { font-size: 1.6rem; }
+            .utility-bar .inner { flex-direction: column; gap: 4px; }
+            .footer-main { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Tricolor Strip -->
+<div class="tricolor-strip"></div>
+
+<!-- Utility Bar -->
+<div class="utility-bar">
+    <div class="inner">
+        <div>
+            <a href="#main-content">Skip to Main Content</a>
+            <a href="#">Screen Reader Access</a>
+            <a href="#">Sitemap</a>
+        </div>
+        <div class="utility-right">
+            <div class="font-ctrl">
+                Text Size:
+                <button onclick="document.body.style.fontSize='14px'" title="Small">A-</button>
+                <button onclick="document.body.style.fontSize='16px'" title="Normal">A</button>
+                <button onclick="document.body.style.fontSize='18px'" title="Large">A+</button>
+            </div>
+            <div class="lang-switch">
+                <button class="active">English</button>
+                <button>हिंदी</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Site Header -->
+<header class="site-header">
+    <div class="inner">
+        <!-- Official Ashoka Emblem -->
+        <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="60" cy="52" r="48" fill="#eef2fb" stroke="#003087" stroke-width="1.5"/>
+          <!-- Abacus platform -->
+          <rect x="20" y="96" width="80" height="9" rx="3" fill="#003087"/>
+          <!-- Four lions (Sarnath capital) -->
+          <rect x="28" y="72" width="13" height="25" rx="4" fill="#003087"/>
+          <rect x="45" y="68" width="13" height="29" rx="4" fill="#003087"/>
+          <rect x="62" y="68" width="13" height="29" rx="4" fill="#003087"/>
+          <rect x="79" y="72" width="13" height="25" rx="4" fill="#003087"/>
+          <!-- Lion heads -->
+          <circle cx="34.5" cy="68" r="7.5" fill="#003087"/>
+          <circle cx="51.5" cy="63" r="7.5" fill="#003087"/>
+          <circle cx="68.5" cy="63" r="7.5" fill="#003087"/>
+          <circle cx="85.5" cy="68" r="7.5" fill="#003087"/>
+          <!-- Ashoka Chakra: outer ring -->
+          <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+          <circle cx="60" cy="52" r="4.5" fill="#003087"/>
+          <!-- Inner ring -->
+          <circle cx="60" cy="52" r="13" fill="none" stroke="#003087" stroke-width="1"/>
+          <!-- 24 spokes -->
+          <g stroke="#003087" stroke-width="1.3" stroke-linecap="round">
+            <line x1="60" y1="24" x2="60" y2="37"/><line x1="67.3" y1="24.6" x2="64.8" y2="37"/>
+            <line x1="74" y1="26.9" x2="69.5" y2="38.5"/><line x1="79.8" y1="30.8" x2="73.6" y2="40.5"/>
+            <line x1="84.2" y1="36.1" x2="76.6" y2="43.9"/><line x1="87.1" y1="42.4" x2="78.6" y2="47.6"/>
+            <line x1="88" y1="49.2" x2="79.5" y2="51"/><line x1="87.1" y1="56" x2="78.6" y2="53.8"/>
+            <line x1="84.2" y1="62.1" x2="76.6" y2="57.7"/><line x1="79.8" y1="67.4" x2="73.6" y2="61.5"/>
+            <line x1="74" y1="71.3" x2="69.5" y2="61.7"/><line x1="67.3" y1="73.5" x2="64.8" y2="61.3"/>
+            <line x1="60" y1="74" x2="60" y2="61.7"/><line x1="52.7" y1="73.5" x2="55.2" y2="61.3"/>
+            <line x1="46" y1="71.3" x2="50.5" y2="61.7"/><line x1="40.2" y1="67.4" x2="46.4" y2="61.5"/>
+            <line x1="35.8" y1="62.1" x2="43.4" y2="57.7"/><line x1="32.9" y1="56" x2="41.4" y2="53.8"/>
+            <line x1="32" y1="49.2" x2="40.5" y2="51"/><line x1="32.9" y1="42.4" x2="41.4" y2="47.6"/>
+            <line x1="35.8" y1="36.1" x2="43.4" y2="43.9"/><line x1="40.2" y1="30.8" x2="46.4" y2="40.5"/>
+            <line x1="46" y1="26.9" x2="50.5" y2="38.5"/><line x1="52.7" y1="24.6" x2="55.2" y2="37"/>
+          </g>
+          <!-- Satyameva Jayate -->
+          <text x="60" y="118" text-anchor="middle" font-size="7" fill="#003087" font-family="serif" font-weight="bold" letter-spacing="0.5">सत्यमेव जयते</text>
+        </svg>
+
+        <div class="portal-title">
+            <div class="ministry">Ministry of Electronics &amp; Information Technology | Government of India</div>
+            <h1>CitizenConnect — Jansunwai Portal</h1>
+            <div class="tagline">Citizen Grievance &amp; Complaint Management System</div>
+        </div>
+        <div class="header-right">
+            <div class="helpline">Helpline: <strong>1800-XXX-XXXX</strong><br><span style="font-size:0.72rem;">Toll Free | 24×7</span></div>
+            <div class="nic-badge">Designed, Developed &amp; Hosted by NIC</div>
+        </div>
+    </div>
+</header>
+
+<!-- Navigation -->
+<nav class="main-nav" id="mainNav">
+    <div class="inner">
+        <a href="#" class="active">Home</a>
+        <a href="#about">About Portal</a>
+        <a href="#features">Features</a>
+        <a href="#how-it-works">How It Works</a>
+        <a href="#testimonials">Citizen Feedback</a>
+        <a href="#">Contact Us</a>
+        <div class="nav-spacer"></div>
+        <div class="nav-action-btns">
+            <a href="auth.html" class="btn-nav-signin">Sign In</a>
+            <a href="auth.html" class="btn-nav-register">Register</a>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero" id="main-content">
+    <div class="inner">
+        <div class="hero-text">
+            <div class="hero-badge">
+                <span class="dot"></span>
+                Portal is Live — Serving 50,000+ Citizens
+            </div>
+            <h2>Your Grievance,<br>Our <span>Priority.</span></h2>
+            <p>
+                CitizenConnect is the official online platform for lodging, tracking and resolving civic grievances. 
+                Report infrastructure issues, public service failures, or other complaints directly to the concerned department — 
+                transparently, efficiently, and in real-time.
+            </p>
+            <div class="hero-cta">
+                <a href="auth.html" class="btn-primary">Lodge a Grievance</a>
+                <a href="#how-it-works" class="btn-secondary-hero">How It Works</a>
+            </div>
+        </div>
+        <div class="hero-visual-card">
+            <h3>Recent Grievances</h3>
+            <div class="complaint-row">
+                <div>
+                    <div class="c-id">#2024-POT-001247</div>
+                    <div class="c-title">Pothole on Main Street causing traffic</div>
+                    <div class="c-meta">Ward 12 &nbsp;|&nbsp; 2 days ago</div>
+                </div>
+                <span class="status-badge status-resolved">Resolved</span>
+            </div>
+            <div class="complaint-row">
+                <div>
+                    <div class="c-id">#2024-WTR-001248</div>
+                    <div class="c-title">Water leakage near park entrance</div>
+                    <div class="c-meta">Ward 5 &nbsp;|&nbsp; 5 hours ago</div>
+                </div>
+                <span class="status-badge status-progress">In Progress</span>
+            </div>
+            <div class="complaint-row">
+                <div>
+                    <div class="c-id">#2024-LGT-001249</div>
+                    <div class="c-title">Street light not working for a week</div>
+                    <div class="c-meta">Ward 8 &nbsp;|&nbsp; 1 day ago</div>
+                </div>
+                <span class="status-badge status-resolved">Resolved</span>
+            </div>
+            <div class="complaint-row">
+                <div>
+                    <div class="c-id">#2024-SAN-001250</div>
+                    <div class="c-title">Garbage not collected for 3 days</div>
+                    <div class="c-meta">Ward 3 &nbsp;|&nbsp; 3 hours ago</div>
+                </div>
+                <span class="status-badge status-pending">Pending</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Strip -->
+<div class="stats-strip">
+    <div class="inner">
+        <div class="stat-item">
+            <div class="stat-val">50,000+</div>
+            <div class="stat-label">Citizens Registered</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-val">1,20,000+</div>
+            <div class="stat-label">Grievances Resolved</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-val">98%</div>
+            <div class="stat-label">Resolution Rate</div>
+        </div>
+        <div class="stat-item">
+            <div class="stat-val">24 hrs</div>
+            <div class="stat-label">Avg. Response Time</div>
+        </div>
+    </div>
+</div>
+
+<!-- About Section -->
+<section class="section" id="about">
+    <div class="section-inner">
+        <div class="section-heading">
+            <div class="label">About the Portal</div>
+            <h2>Bridging Citizens &amp; Governance</h2>
+            <p>A transparent, accountable mechanism to address civic grievances at the grassroots level.</p>
+        </div>
+        <div class="about-grid">
+            <div class="about-card">
+                <div class="icon">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#003087" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+                  </svg>
+                </div>
+                <h3>The Challenge</h3>
+                <p>Millions of citizens face civic issues daily — broken street lights, potholes, water shortages, garbage accumulation. Traditional complaint systems are slow and opaque, leaving citizens frustrated.</p>
+            </div>
+            <div class="about-card" style="border-top-color: var(--gov-saffron);">
+                <div class="icon">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#003087" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                </div>
+                <h3>Our Solution</h3>
+                <p>CitizenConnect transforms the way you interact with local governance. Report issues in minutes, track progress in real-time, and see your feedback drive actual change in your community.</p>
+            </div>
+            <div class="about-card" style="border-top-color: var(--gov-green);">
+                <div class="icon">
+                  <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#003087" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+                  </svg>
+                </div>
+                <h3>The Impact</h3>
+                <p>Thousands of active citizens are already making a difference. Complaints have led to faster resolutions, better public services, and more transparent governance across all wards.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section gray-bg" id="features">
+    <div class="section-inner">
+        <div class="section-heading">
+            <div class="label">Portal Features</div>
+            <h2>Powerful Tools for Every Citizen</h2>
+            <p>Everything you need to make your voice heard and track resolution of civic issues.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card saffron">
+                <div class="f-icon">
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#FF9933" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                  </svg>
+                </div>
+                <div>
+                    <h3>Instant Grievance Filing</h3>
+                    <p>Lodge complaints in minutes with our simple interface. Add photos, describe the issue, and select the category. No visits to government offices required.</p>
+                </div>
+            </div>
+            <div class="feature-card navy">
+                <div class="f-icon">
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#003087" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                  </svg>
+                </div>
+                <div>
+                    <h3>Real-time Notifications</h3>
+                    <p>Stay informed at every step. Get SMS/email updates when your complaint is received, assigned to a department, in progress, or resolved.</p>
+                </div>
+            </div>
+            <div class="feature-card green">
+                <div class="f-icon">
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#138808" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+                  </svg>
+                </div>
+                <div>
+                    <h3>Status Tracking Dashboard</h3>
+                    <p>View the current status of all your grievances from a single dashboard. Access complete history and resolution timelines at any time.</p>
+                </div>
+            </div>
+            <div class="feature-card saffron">
+                <div class="f-icon">
+                  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#FF9933" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+                  </svg>
+                </div>
+                <div>
+                    <h3>Automatic Department Routing</h3>
+                    <p>Complaints are automatically routed to the correct department — PWD, Water Board, Municipality, Electricity — based on issue type and location.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section class="section" id="how-it-works">
+    <div class="section-inner">
+        <div class="section-heading">
+            <div class="label">Process</div>
+            <h2>How CitizenConnect Works</h2>
+            <p>From grievance filing to resolution — a simple, transparent 4-step process.</p>
+        </div>
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <h3>Register &amp; Login</h3>
+                <p>Create a free account with your mobile number or Aadhaar-linked email. Takes less than 2 minutes.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">2</div>
+                <h3>File Grievance</h3>
+                <p>Describe the issue, attach a photo, and pin your ward/location. Submit — your unique grievance ID is generated instantly.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">3</div>
+                <h3>Track Progress</h3>
+                <p>Receive real-time updates via SMS/email as your grievance is processed by the concerned department.</p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <h3>Confirm Resolution</h3>
+                <p>Confirm resolution and rate your experience. Your feedback helps improve service quality across the municipality.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Citizen Testimonials -->
+<section class="section gray-bg" id="testimonials">
+    <div class="section-inner">
+        <div class="section-heading">
+            <div class="label">Citizen Feedback</div>
+            <h2>Voices from Our Citizens</h2>
+            <p>Real experiences of citizens who have used CitizenConnect to resolve civic issues.</p>
+        </div>
+        <div class="testi-grid">
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <blockquote>"I reported a broken street light that had been dark for weeks. Within 24 hours, someone came to fix it! This portal actually works."</blockquote>
+                <div class="testi-author">
+                    <div class="testi-avatar">RK</div>
+                    <div class="testi-info">
+                        <strong>Rajesh Kumar</strong>
+                        <span>Ward 15, Chennai</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <blockquote>"The transparency is remarkable. I can track exactly where my complaint is in the system. No more calling helplines and getting no response."</blockquote>
+                <div class="testi-author">
+                    <div class="testi-avatar">SP</div>
+                    <div class="testi-info">
+                        <strong>Sunita Patel</strong>
+                        <span>Ward 8, Mumbai</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testi-card">
+                <div class="testi-stars">★★★★★</div>
+                <blockquote>"As a senior citizen, this portal is a boon. Simple to use, and I no longer need to visit government offices for basic civic complaints."</blockquote>
+                <div class="testi-author">
+                    <div class="testi-avatar">MV</div>
+                    <div class="testi-info">
+                        <strong>M. Venkatesh</strong>
+                        <span>Ward 22, Bengaluru</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<div class="cta-box-wrap">
+    <div class="cta-box">
+        <div class="cta-inner">
+            <h2>Ready to Lodge Your Grievance?</h2>
+            <p>Register on CitizenConnect and help build a more responsive, transparent civic administration.</p>
+            <div class="cta-buttons">
+                <a href="auth.html" class="btn-cta-white">Register Now — It's Free</a>
+                <a href="#features" class="btn-cta-outline">Learn More</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+    <div class="footer-main">
+        <div class="footer-about">
+            <div class="footer-brand">
+                <svg width="36" height="36" viewBox="0 0 100 100">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="#FF9933" stroke-width="4"/>
+                    <circle cx="50" cy="50" r="18" fill="none" stroke="#fff" stroke-width="3"/>
+                    <circle cx="50" cy="50" r="4" fill="#FF9933"/>
+                </svg>
+                <span>CitizenConnect</span>
+            </div>
+            <p>An official Government of India initiative to provide citizens a transparent, time-bound grievance redressal system. Powered by NIC.</p>
+            <p style="font-size:0.78rem; color:#7a8aaa;">Last Updated: March 2026 | Best viewed in Chrome, Firefox, Edge at 1024×768 resolution</p>
+        </div>
+        <div class="footer-col">
+            <h4>Portal</h4>
+            <ul>
+                <li><a href="#">Home</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#">Check Grievance Status</a></li>
+                <li><a href="#">Upload Documents</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Government Links</h4>
+            <ul>
+                <li><a href="https://india.gov.in" target="_blank">india.gov.in</a></li>
+                <li><a href="https://pgportal.gov.in" target="_blank">PG Portal</a></li>
+                <li><a href="https://mygov.in" target="_blank">MyGov</a></li>
+                <li><a href="https://nic.in" target="_blank">NIC</a></li>
+                <li><a href="https://digitalindia.gov.in" target="_blank">Digital India</a></li>
+            </ul>
+        </div>
+        <div class="footer-col">
+            <h4>Help &amp; Legal</h4>
+            <ul>
+                <li><a href="#">User Manual</a></li>
+                <li><a href="#">FAQ</a></li>
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Use</a></li>
+                <li><a href="#">Accessibility Statement</a></li>
+                <li><a href="#">Copyright Policy</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        &copy; 2024 CitizenConnect — Government of India. All rights reserved. |
+        Designed, Developed &amp; Hosted by
+        <a href="https://nic.in" target="_blank">National Informatics Centre (NIC)</a>,
+        Ministry of Electronics &amp; Information Technology
+    </div>
+</footer>
+
+<script>
+    // Navbar active scroll highlight
+    const navLinks = document.querySelectorAll('.main-nav a');
+    const sections = document.querySelectorAll('section[id], div[id="main-content"]');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(sec => {
+            const top = sec.offsetTop - 120;
+            if (window.scrollY >= top) current = sec.getAttribute('id');
+        });
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === '#' + current ||
+                (current === 'main-content' && link.getAttribute('href') === '#')) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function(e) {
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                e.preventDefault();
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        });
+    });
+
+    // Intersection Observer for fade-in
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.about-card, .feature-card, .step-card, .testi-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        observer.observe(el);
+    });
+</script>
+</body>
+</html>
