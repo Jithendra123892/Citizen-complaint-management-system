@@ -10,6 +10,7 @@ const { body, validationResult } = require('express-validator');
 const db = require('../config/database');
 const { asyncHandler, AppError } = require('../middleware/errorHandler');
 const { authMiddleware } = require('../middleware/auth');
+const { loginLimiter } = require('../middleware/security');
 
 const router = express.Router();
 
@@ -31,11 +32,11 @@ const generateToken = (user) => {
 // @desc    Register new citizen
 // @access  Public
 router.post('/register', [
-    body('citizenName').trim().notEmpty().withMessage('Name is required'),
-    body('aadhaarNumber').trim().isLength({ min: 12, max: 12 }).withMessage('Valid Aadhaar required'),
-    body('phoneNumber').trim().isLength({ min: 10, max: 10 }).withMessage('Valid phone required'),
+    body('citizenName').trim().isLength({ min: 2, max: 50 }).withMessage('Name must be 2-50 characters'),
+    body('aadhaarNumber').trim().isLength({ min: 12, max: 12 }).withMessage('Valid Aadhaar number required (12 digits)'),
+    body('phoneNumber').trim().isLength({ min: 10, max: 10 }).withMessage('Valid phone number required (10 digits)'),
     body('email').optional().isEmail().withMessage('Valid email required'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
+    body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
     body('address').optional().trim(),
     body('wardNumber').optional().trim(),
     body('pincode').optional().trim()
@@ -111,9 +112,8 @@ router.post('/register', [
 }));
 
 // @route   POST /api/auth/login
-// @desc    Login user
 // @access  Public
-router.post('/login', [
+router.post('/login', loginLimiter, [
     body('username').trim().notEmpty().withMessage('Username required'),
     body('password').notEmpty().withMessage('Password required')
 ], asyncHandler(async (req, res) => {
@@ -126,7 +126,7 @@ router.post('/login', [
 
     // Find user
     const user = await db.queryRow(
-        `SELECT u.*, c.citizen_name, o.officer_name 
+        `SELECT u.*, c.citizen_name, o.officer_name
          FROM users u
          LEFT JOIN citizens c ON u.user_type = 'Citizen' AND u.reference_id = c.citizen_id
          LEFT JOIN officers o ON u.user_type = 'Officer' AND u.reference_id = o.officer_id
@@ -220,62 +220,6 @@ router.post('/logout', authMiddleware, asyncHandler(async (req, res) => {
     res.json({
         status: 'success',
         message: 'Logged out successfully'
-    });
-}));
-
-// @route   PUT /api/auth/password
-// @desc    Change password
-// @access  Private
-router.put('/password', authMiddleware, [
-    body('currentPassword').notEmpty().withMessage('Current password required'),
-    body('newPassword').isLength({ min: 6 }).withMessage('New password must be at least 6 characters')
-], asyncHandler(async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        throw new AppError('Validation failed', 400);
-    }
-
-    const { currentPassword, newPassword } = req.body;
-
-    const user = await db.queryRow(
-        'SELECT password_hash FROM users WHERE user_id = ?',
-        [req.user.id]
-    );
-
-    const isValid = await bcrypt.compare(currentPassword, user.password_hash);
-    if (!isValid) {
-        throw new AppError('Current password is incorrect', 400);
-    }
-
-    const newPasswordHash = await bcrypt.hash(newPassword, 10);
-    await db.query(
-        'UPDATE users SET password_hash = ? WHERE user_id = ?',
-        [newPasswordHash, req.user.id]
-    );
-
-    res.json({
-        status: 'success',
-        message: 'Password changed successfully'
-    });
-}));
-
-// @route   POST /api/auth/forgot-password
-// @desc    Request password reset
-// @access  Public
-router.post('/forgot-password', [
-    body('email').isEmail().withMessage('Valid email required')
-], asyncHandler(async (req, res) => {
-    const { email } = req.body;
-
-    const user = await db.queryRow(
-        'SELECT user_id, username FROM users WHERE email = ?',
-        [email]
-    );
-
-    // Always return success to prevent email enumeration
-    res.json({
-        status: 'success',
-        message: 'If an account exists with this email, a password reset link has been sent.'
     });
 }));
 
