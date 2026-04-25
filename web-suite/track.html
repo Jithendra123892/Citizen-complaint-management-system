@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CitizenConnect - Track Complaint</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933;
+            --gov-white: #FFFFFF;
+            --gov-green: #138808;
+            --gov-navy: #003087;
+            --gov-navy-dark: #1a1a6e;
+            --gov-navy-light: #0044b0;
+            --gov-blue-bar: #003380;
+            --gov-gray-bg: #f0f4f8;
+            --gov-gray-light: #e8edf2;
+            --gov-text: #1a1a1a;
+            --gov-text-light: #4b4b4b;
+            --gov-border: #cccccc;
+            --gov-footer: #1B2A6B;
+            --gov-footer-dark: #111d4e;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; font-size: 16px; }
+        body { font-family: 'Noto Sans', sans-serif; background: #fff; color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+        a:hover { text-decoration: underline; color: var(--gov-navy-light); }
+        img { max-width: 100%; }
+
+        /* Header Styles */
+        .tricolor-strip {
+            height: 5px;
+            background: linear-gradient(90deg,
+                #FF9933 0%, #FF9933 33.33%,
+                #fff 33.33%, #fff 66.66%,
+                #138808 66.66%, #138808 100%);
+        }
+
+        .utility-bar {
+            background: #f5f5f5;
+            border-bottom: 1px solid #ddd;
+            padding: 4px 0;
+            font-size: 0.78rem;
+        }
+        .utility-bar .inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1rem;
+            display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+        }
+        .utility-bar a { color: var(--gov-navy); margin-right: 10px; }
+        .utility-bar a:hover { text-decoration: underline; }
+
+        .site-header {
+            background: #fff;
+            border-bottom: 3px solid var(--gov-saffron);
+            padding: 14px 0;
+        }
+        .site-header .inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; align-items: center; gap: 1.5rem;
+        }
+        .emblem-svg { width: 70px; height: 70px; flex-shrink: 0; }
+        .portal-title { flex: 1; }
+        .portal-title .ministry {
+            font-size: 0.78rem; color: #555; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;
+        }
+        .portal-title h1 {
+            font-size: 1.45rem; font-weight: 700; color: var(--gov-navy); line-height: 1.2;
+        }
+        .portal-title .tagline {
+            font-size: 0.82rem; color: var(--gov-text-light); margin-top: 2px;
+        }
+
+        .main-nav {
+            background: var(--gov-blue-bar);
+            position: sticky; top: 0; z-index: 1000;
+        }
+        .main-nav .inner {
+            max-width: 1200px; margin: 0 auto; padding: 0 1.5rem;
+            display: flex; align-items: stretch;
+        }
+        .main-nav a {
+            display: block; color: #fff; padding: 12px 16px;
+            font-size: 0.9rem; font-weight: 500; white-space: nowrap;
+            text-decoration: none; border-right: 1px solid rgba(255,255,255,0.15);
+            transition: background 0.2s;
+        }
+        .main-nav a:first-child { border-left: 1px solid rgba(255,255,255,0.15); }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); color: #fff; }
+        .nav-spacer { flex: 1; }
+
+        .track-container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 0 1.5rem;
+        }
+
+        .track-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .track-header h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gov-navy);
+            margin-bottom: 10px;
+        }
+
+        .track-header p {
+            font-size: 1rem;
+            color: var(--gov-text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .track-form {
+            background: #fff;
+            border: 1px solid var(--gov-border);
+            border-radius: 12px;
+            padding: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gov-text);
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--gov-border);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--gov-navy);
+            box-shadow: 0 0 0 3px rgba(0,48,135,0.1);
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 14px;
+            background: var(--gov-saffron);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: #e68a2e;
+        }
+
+        .quick-search {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .quick-search h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gov-navy);
+            margin-bottom: 15px;
+        }
+
+        .chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .chip {
+            padding: 8px 16px;
+            background: var(--gov-gray-bg);
+            border: 1px solid var(--gov-border);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chip:hover {
+            background: var(--gov-saffron);
+            color: #fff;
+            border-color: var(--gov-saffron);
+        }
+
+        .result-container {
+            background: #fff;
+            border: 1px solid var(--gov-border);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+            display: none;
+        }
+
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--gov-border);
+        }
+
+        .complaint-header h2 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gov-navy);
+        }
+
+        .status-badge {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-progress {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .status-resolved {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .complaint-details {
+            margin-bottom: 30px;
+        }
+
+        .detail-row {
+            display: flex;
+            margin-bottom: 15px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--gov-text-light);
+            width: 150px;
+        }
+
+        .detail-value {
+            flex: 1;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--gov-border);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -37px;
+            top: 5px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--gov-navy);
+            border: 4px solid #fff;
+            box-shadow: 0 0 0 2px var(--gov-border);
+        }
+
+        .timeline-item.completed .timeline-marker {
+            background: var(--gov-green);
+        }
+
+        .timeline-content {
+            background: var(--gov-gray-bg);
+            border-radius: 10px;
+            padding: 15px;
+        }
+
+        .timeline-content p {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .timeline-content span {
+            font-size: 0.85rem;
+            color: var(--gov-text-light);
+        }
+
+        .timeline-by {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--gov-text-light);
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        .footer {
+            background: var(--gov-footer);
+            color: #cdd5e0;
+            padding: 20px 0;
+            margin-top: 40px;
+        }
+
+        .footer .inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            text-align: center;
+        }
+
+        .footer a {
+            color: #9be;
+        }
+
+        @media (max-width: 768px) {
+            .track-container {
+                padding: 0 1rem;
+            }
+
+            .track-form {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+
+    <div class="utility-bar">
+        <div class="inner">
+            <div>
+                <a href="index.html">Home</a>
+                <a href="dashboard.html">Dashboard</a>
+            </div>
+            <div class="utility-right">
+                <span>Welcome, <span id="userName">Citizen</span></span> |
+                <a href="#" onclick="logout()">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <header class="site-header">
+        <div class="inner">
+            <div class="portal-title">
+                <h1>CitizenConnect - Track Complaint</h1>
+                <div class="tagline">Citizen Grievance & Complaint Management System</div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Complaints</a>
+            <a href="track.html" class="active">Track Complaint</a>
+            <div class="nav-spacer"></div>
+        </div>
+    </nav>
+
+    <div class="track-container">
+        <div class="track-header">
+            <h1>Track Your Complaint</h1>
+            <p>Enter your complaint number to check the current status and progress</p>
+        </div>
+
+        <div class="track-form">
+            <form id="trackForm">
+                <div class="form-group">
+                    <label for="complaintNumber">Complaint Number <span style="color: red;">*</span></label>
+                    <input type="text" id="complaintNumber" placeholder="e.g., 2024-POT-001247" required>
+                </div>
+                <button type="submit" class="btn-primary">Track Complaint</button>
+            </form>
+
+            <div class="quick-search">
+                <h3>Quick Search</h3>
+                <div class="chips">
+                    <div class="chip" data-complaint="2024-POT-001247">#2024-POT-001247</div>
+                    <div class="chip" data-complaint="2024-WTR-001248">#2024-WTR-001248</div>
+                    <div class="chip" data-complaint="2024-LGT-001249">#2024-LGT-001249</div>
+                    <div class="chip" data-complaint="2024-SAN-001250">#2024-SAN-001250</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+            <div class="complaint-header">
+                <h2>Complaint Details</h2>
+                <div class="complaint-header-content">
+                    <h2 id="complaintTitle">Pothole on Main Road causing traffic issues</h2>
+                    <div class="complaint-status">
+                        <span class="status-badge status-resolved">Resolved</span>
+                    </div>
+                </div>
+            </div>
+            <div class="complaint-details">
+                <div class="detail-row">
+                    <div class="detail-label">Complaint ID:</div>
+                    <div class="detail-value" id="complaintId">#2024-POT-001247</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Category:</div>
+                    <div class="detail-value" id="category">Pothole Repair</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Department:</div>
+                    <div class="detail-value" id="department">Roads & Infrastructure</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Filed Date:</div>
+                    <div class="detail-value" id="filedDate">15 April 2024</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Location:</div>
+                    <div class="detail-value" id="location">Main Road, Gandhi Nagar Junction</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">Priority:</div>
+                    <div class="detail-value" id="priority">Medium</div>
+                </div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Status:</div>
+                <div class="detail-value" id="status">Resolved</div>
+            </div>
+        </div>
+        <div class="timeline">
+            <h3>Complaint Timeline</h3>
+            <div class="timeline-item completed">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <p>Complaint Filed</p>
+                    <span>01 Jan 2024, 10:30 AM</span>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <p>Complaint Assigned</p>
+                    <span>02 Jan 2024, 09:15 AM</span>
+                </div>
+            </div>
+            <div class="timeline-content">
+                <p>Work In Progress</p>
+                <span>03 Jan 2024, 14:20 PM</span>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-marker"></div>
+                <div class="timeline-content">
+                    <p>Complaint Resolved</p>
+                    <span>05 Jan 2024, 16:45 PM</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function logout() {
+        if (confirm('Are you sure you want to logout?')) {
+            localStorage.removeItem('token');
+            window.location.href = 'index.html';
+        }
+    }
+
+    // Quick search chips
+    document.querySelectorAll('.chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            document.getElementById('complaintNumber').value = chip.dataset.complaint;
+            document.getElementById('trackForm').dispatchEvent(new Event('submit'));
+        });
+    });
+
+    document.getElementById('trackForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const complaintNumber = document.getElementById('complaintNumber').value.trim();
+        if (complaintNumber) {
+            // In a real implementation, this would make an API call
+            // For now, we'll just show the result container
+            document.getElementById('resultContainer').style.display = 'block';
+        }
+    });
+</script>
+</body>
+</html>

@@ -446,21 +446,23 @@
 
     function handleLogin(e) {
         e.preventDefault();
-        // Get form data
-        const formData = new FormData(e.target);
+
         const username = e.target.querySelector('input[type="text"]').value;
         const password = e.target.querySelector('input[type="password"]').value;
 
-        // Here you would make an API call to your backend
-        // For now, we'll just redirect to the dashboard
-        window.location.href = 'index.html';
+        // In a real implementation, this would make an API call to your backend
+        // For now, we'll store a mock token and redirect to dashboard
+        localStorage.setItem('token', 'mock-jwt-token');
+        window.location.href = 'dashboard.html';
     }
 
     function handleRegister(e) {
         e.preventDefault();
-        // Here you would make an API call to your backend
-        // For now, we'll just redirect to the dashboard
-        window.location.href = 'index.html';
+
+        // In a real implementation, this would make an API call to your backend
+        // For now, we'll store a mock token and redirect to dashboard
+        localStorage.setItem('token', 'mock-jwt-token');
+        window.location.href = 'dashboard.html';
     }
 </script>
 </body>
