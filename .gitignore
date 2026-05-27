@@ -30,7 +30,6 @@ Thumbs.db
 # Rail/Ver
 .railway/
 .vercel/
-railway.json
 
 # Docs
 DATABASE_QUERIES.md
