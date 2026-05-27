@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>My Schedule - Officer Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 20px; }
+
+        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 20px; }
+        .calendar-day-header { text-align: center; font-weight: 600; color: var(--gov-text-light); padding: 8px; }
+        .calendar-day {
+            min-height: 80px; border: 1px solid var(--gov-border); border-radius: 6px;
+            padding: 8px; position: relative; background: #fff;
+        }
+        .calendar-day.today { border: 2px solid var(--gov-saffron); }
+        .calendar-day.has-tasks { background: #f0f7ff; }
+        .calendar-day-number { font-weight: 600; color: var(--gov-text); margin-bottom: 4px; }
+        .task-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin: 2px; }
+        .task-dot.pending { background: #f57c00; }
+        .task-dot.progress { background: #1976d2; }
+        .task-dot.resolved { background: #388e3c; }
+        .task-dot.critical { background: #c62828; }
+
+        .task-list { list-style: none; }
+        .task-item { padding: 12px; border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 12px; }
+        .task-item:last-child { border-bottom: none; }
+        .task-item:hover { background: #f9fafb; }
+        .task-priority { width: 4px; height: 40px; border-radius: 2px; }
+        .task-priority.low { background: #388e3c; }
+        .task-priority.medium { background: #f57f17; }
+        .task-priority.high { background: #c62828; }
+        .task-priority.critical { background: #ad1457; }
+        .task-info { flex: 1; }
+        .task-title { font-weight: 600; color: var(--gov-text); }
+        .task-meta { font-size: 0.8rem; color: var(--gov-text-light); }
+        .task-status { padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-progress { background: #e3f2fd; color: #1976d2; }
+        .status-resolved { background: #e8f5e9; color: #388e3c; }
+
+        .btn { display: inline-block; padding: 8px 16px; border-radius: 6px; font-size: 0.85rem; font-weight: 500; cursor: pointer; border: none; font-family: inherit; }
+        .btn-primary { background: var(--gov-saffron); color: #fff; }
+        .btn-primary:hover { background: #e68a2e; }
+        .btn-outline { background: transparent; border: 1px solid var(--gov-navy); color: var(--gov-navy); }
+        .btn-outline:hover { background: var(--gov-navy); color: #fff; }
+
+        .footer { background: var(--gov-footer); color: #cdd5e0; padding: 16px 0; margin-top: 40px; text-align: center; font-size: 0.78rem; }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Complaints</a>
+            <span>Welcome, <strong id="officerName">Officer</strong></span>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+                <circle cx="60" cy="52" r="5" fill="#003087"/>
+                <rect x="22" y="95" width="76" height="9" rx="3" fill="#003087"/>
+                <rect x="30" y="72" width="12" height="24" rx="4" fill="#003087"/>
+                <rect x="46" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="62" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="78" y="72" width="12" height="24" rx="4" fill="#003087"/>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Officer Portal | Ministry of Electronics & Information Technology</div>
+                <h1>CitizenConnect — Officer Panel</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Assigned Complaints</a>
+            <a href="schedule.html" class="active">My Schedule</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>My Schedule</h1>
+            <p>View your assigned tasks and upcoming deadlines</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span id="currentMonth">April 2026</span>
+                <div>
+                    <button class="btn btn-outline" id="prevMonthBtn">Previous</button>
+                    <button class="btn btn-outline" id="nextMonthBtn">Next</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="calendar-grid">
+                    <div class="calendar-day-header">Sun</div>
+                    <div class="calendar-day-header">Mon</div>
+                    <div class="calendar-day-header">Tue</div>
+                    <div class="calendar-day-header">Wed</div>
+                    <div class="calendar-day-header">Thu</div>
+                    <div class="calendar-day-header">Fri</div>
+                    <div class="calendar-day-header">Sat</div>
+                </div>
+                <div class="calendar-grid" id="calendarDays"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Today's Tasks</div>
+            <div class="card-body">
+                <ul class="task-list" id="todayTasks">
+                    <li class="task-item" style="justify-content:center; color:var(--gov-text-light);">Loading tasks...</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Upcoming Deadlines</div>
+            <div class="card-body">
+                <ul class="task-list" id="upcomingTasks">
+                    <li class="task-item" style="justify-content:center; color:var(--gov-text-light);">Loading tasks...</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+    <script src="../js/common/config.js"></script>
+    <script src="../js/officer/schedule.js"></script>
+</body>
+</html>

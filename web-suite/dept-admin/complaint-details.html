@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>Complaint Details - Department Admin Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 20px; }
+
+        .detail-row { display: flex; margin-bottom: 12px; border-bottom: 1px solid #eee; padding-bottom: 12px; }
+        .detail-label { width: 150px; font-weight: 600; color: var(--gov-text-light); }
+        .detail-value { flex: 1; }
+
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-in-progress { background: #e3f2fd; color: #1976d2; }
+        .status-resolved { background: #e8f5e9; color: #388e3c; }
+        .status-closed { background: #f5f5f5; color: #757575; }
+        .status-rejected { background: #ffebee; color: #c62828; }
+
+        .sla-badge { display: inline-block; padding: 4px 12px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; background: #e3f2fd; color: #1976d2; margin-left: 12px; }
+        .sla-warning { background: #fff3e0; color: #f57c00; }
+        .sla-critical { background: #ffebee; color: #c62828; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.85rem; color: var(--gov-text-light); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 14px; border: 1px solid var(--gov-border); border-radius: 4px; font-size: 0.9rem; }
+        .form-group textarea { min-height: 80px; resize: vertical; }
+
+        .btn { display: inline-block; padding: 10px 20px; border: none; border-radius: 4px; font-size: 0.9rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-primary { background: var(--gov-navy); color: #fff; }
+        .btn-primary:hover { background: var(--gov-navy-dark); }
+        .btn-secondary { background: #6c757d; color: #fff; }
+        .btn-secondary:hover { background: #5a6268; }
+
+        .timeline { margin-top: 20px; }
+        .timeline-item { display: flex; padding: 12px 0; border-bottom: 1px solid #eee; }
+        .timeline-item:last-child { border-bottom: none; }
+        .timeline-date { width: 150px; font-size: 0.85rem; color: var(--gov-text-light); }
+        .timeline-content { flex: 1; }
+        .timeline-status { font-weight: 600; }
+        .timeline-reason { font-size: 0.85rem; color: var(--gov-text-light); margin-top: 4px; }
+
+        .footer { background: var(--gov-footer); color: #fff; padding: 20px 0; margin-top: 40px; text-align: center; font-size: 0.9rem; }
+
+        .attachments-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+        .attachment-item { border: 1px solid #ddd; border-radius: 8px; padding: 12px; text-align: center; }
+        .attachment-icon { font-size: 2rem; margin-bottom: 8px; }
+        .attachment-name { font-size: 0.8rem; color: #666; word-break: break-all; margin-bottom: 8px; }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <span>Government of India | Official Portal</span>
+            <span id="userInfo"></span>
+        </div>
+    </div>
+    <div class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#003087" stroke-width="2"/>
+                <circle cx="50" cy="50" r="35" fill="none" stroke="#003087" stroke-width="1.5"/>
+                <text x="50" y="55" text-anchor="middle" font-size="24" fill="#003087" font-weight="bold">🇮🇳</text>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Ministry of Administrative Reforms</div>
+                <h1>CitizenConnect - Jansunwai Portal</h1>
+            </div>
+        </div>
+    </div>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="officers.html">Officers</a>
+            <a href="complaints.html" class="active">Complaints</a>
+            <a href="reports.html">Reports</a>
+            <a href="profile.html">Profile</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Complaint Details</h1>
+            <a href="complaints.html" class="btn btn-secondary">Back to Complaints</a>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span id="slaDisplay">SLA: Loading...</span>
+            </div>
+            <div class="card-body">
+                <h3>Complaint Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value" id="complaintStatus">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Complaint ID:</span>
+                    <span class="detail-value" id="complaintNumber">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Title:</span>
+                    <span class="detail-value" id="complaintTitle">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Category:</span>
+                    <span class="detail-value" id="complaintCategory">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Priority:</span>
+                    <span class="detail-value" id="complaintPriority">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value" id="complaintLocation">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Description:</span>
+                    <span class="detail-value" id="complaintDescription">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Filed Date:</span>
+                    <span class="detail-value" id="complaintDate">-</span>
+                </div>
+
+                <h3>Citizen Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Citizen Name:</span>
+                    <span class="detail-value" id="citizenName">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Phone:</span>
+                    <span class="detail-value" id="citizenPhone">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Email:</span>
+                    <span class="detail-value" id="citizenEmail">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Address:</span>
+                    <span class="detail-value" id="citizenAddress">-</span>
+                </div>
+
+                <h3>Assignment Information</h3>
+                <div class="detail-row">
+                    <span class="detail-label">Department:</span>
+                    <span class="detail-value" id="departmentName">-</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Assigned Officer:</span>
+                    <span class="detail-value" id="assignedOfficer">-</span>
+                </div>
+
+                <div class="card" id="attachmentsCard" style="display: none;">
+            <div class="card-header">Attachments</div>
+            <div class="card-body">
+                <div id="attachmentsGrid" class="attachments-grid"></div>
+            </div>
+        </div>
+
+        <div class="card" id="proofCard" style="display: none;">
+            <div class="card-header">Proof Submission</div>
+            <div class="card-body">
+                <div class="detail-row">
+                    <label>Status</label>
+                    <span id="proofStatus"></span>
+                </div>
+                <div class="detail-row">
+                    <label>Description</label>
+                    <p id="proofDescription"></p>
+                </div>
+                <div id="proofActions" style="display: none; margin-top: 16px;">
+                    <button class="btn btn-primary" id="approveBtn">Approve Proof</button>
+                    <button class="btn btn-danger" id="rejectBtn">Reject Proof</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="proofAttachmentsCard" style="display: none;">
+            <div class="card-header">Proof Attachments</div>
+            <div class="card-body">
+                <div id="proofAttachmentsGrid" class="attachments-grid"></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Update Status</div>
+            <div class="card-body">
+                <div class="form-group">
+                    <label>New Status</label>
+                    <select id="updateStatus">
+                        <option value="">Select status</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Resolved">Resolved</option>
+                        <option value="Rejected">Rejected</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Note / Reason</label>
+                    <textarea id="updateReason" placeholder="Enter details about the status update..."></textarea>
+                </div>
+                <button class="btn btn-primary" id="updateStatusBtn">Update Status</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Status Timeline</div>
+            <div class="card-body">
+                <div id="statusTimeline" class="timeline">
+                    <p>Loading timeline...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+
+    <script src="../js/common/config.js"></script>
+    <script src="../js/dept-admin/complaint-details.js"></script>
+</body>
+</html>

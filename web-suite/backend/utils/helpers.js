@@ -9,7 +9,6 @@ const crypto = require('crypto');
  */
 const generateComplaintNumber = async (db, categoryId) => {
     try {
-        // Get category code
         const category = await db.queryRow(
             'SELECT category_name FROM complaint_categories WHERE category_id = ?',
             [categoryId]
@@ -19,19 +18,14 @@ const generateComplaintNumber = async (db, categoryId) => {
             throw new Error('Category not found');
         }
 
-        const categoryCode = category.category_name.substring(0, 3).toUpperCase();
+        const categoryCode = category.category_name.substring(0, 3).toUpperCase().replace(/\s/g, '');
         const year = new Date().getFullYear();
 
-        // Get next sequence number
-        const result = await db.query(
-            `SELECT IFNULL(MAX(CAST(SUBSTRING(complaint_number, 9, 6) AS UNSIGNED)), 0) + 1 as next_num 
-             FROM complaints 
-             WHERE complaint_number LIKE ?`,
-            [`${year}-${categoryCode}%`]
-        );
+        // Use timestamp-based unique number to avoid collision issues
+        const timestamp = Date.now().toString().slice(-8);
+        const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
 
-        const sequenceNum = result[0]?.next_num || 1;
-        return `${year}-${categoryCode}-${String(sequenceNum).padStart(6, '0')}`;
+        return `${year}-${categoryCode}-${timestamp}${random}`;
     } catch (error) {
         console.error('Generate complaint number error:', error);
         throw error;

@@ -1,0 +1,29 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+ruvector.db
+
+# Uploads (user content - never commit)
+uploads/
+backend/uploads/
+
+# Build artifacts
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Railway / Vercel
+.railway/
+.vercel/

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>Department Admins - CitizenConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+        .page-header p { color: var(--gov-text-light); }
+
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 20px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f5f7fb; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--gov-text-light); border-bottom: 2px solid var(--gov-border); }
+        td { padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        tr:hover td { background: #f9fafb; }
+
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .status-active { background: #e8f5e9; color: #388e3c; }
+        .status-inactive { background: #ffebee; color: #c62828; }
+
+        .btn { display: inline-block; padding: 8px 16px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: none; font-family: inherit; text-decoration: none; }
+        .btn-primary { background: var(--gov-saffron); color: #fff; }
+        .btn-primary:hover { background: #e68a2e; }
+        .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+        .btn-outline { background: transparent; border: 1px solid var(--gov-navy); color: var(--gov-navy); }
+        .btn-outline:hover { background: var(--gov-navy); color: #fff; }
+        .btn-green { background: var(--gov-green); color: #fff; }
+        .btn-green:hover { background: #0e6b06; }
+        .btn-red { background: #c62828; color: #fff; }
+        .btn-red:hover { background: #b71c1c; }
+
+        .action-links a { margin-right: 8px; }
+
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; }
+        .modal.active { display: flex; align-items: center; justify-content: center; }
+        .modal-content { background: #fff; padding: 24px; border-radius: 8px; width: 100%; max-width: 500px; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h2 { font-size: 1.2rem; color: var(--gov-navy); }
+        .close { font-size: 1.5rem; cursor: pointer; color: #999; }
+        .close:hover { color: #333; }
+
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 0.85rem; color: var(--gov-text); }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid var(--gov-border); border-radius: 4px; font-size: 0.9rem; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--gov-navy); }
+
+        .footer { background: var(--gov-footer); color: #cdd5e0; padding: 16px 0; margin-top: 40px; text-align: center; font-size: 0.78rem; }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <span>SuperAdmin Panel | Government of India</span>
+            <span>Welcome, <strong id="adminName">SuperAdmin</strong> | State: <strong id="stateName">-</strong> | <a href="#" id="logoutBtn">Logout</a></span>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+                <circle cx="60" cy="52" r="5" fill="#003087"/>
+                <rect x="22" y="95" width="76" height="9" rx="3" fill="#003087"/>
+                <rect x="30" y="72" width="12" height="24" rx="4" fill="#003087"/>
+                <rect x="46" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="62" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="78" y="72" width="12" height="24" rx="4" fill="#003087"/>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">SuperAdmin Panel | Ministry of Electronics & Information Technology</div>
+                <h1>CitizenConnect - Department Admins Management</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="departments.html">Departments</a>
+            <a href="dept-admins.html" class="active">Department Admins</a>
+            <a href="complaints.html">All Complaints</a>
+            <a href="officers.html">Manage Officers</a>
+            <a href="analytics.html">Analytics</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <div>
+                <h1>Department Admins</h1>
+                <p>Manage department administrators for your state</p>
+            </div>
+            <button class="btn btn-primary" id="addDeptAdminBtn">+ Add Department Admin</button>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>Department Admins List</span>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Username</th>
+                            <th>Department</th>
+                            <th>City</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="deptAdminsTable">
+                        <tr><td colspan="8" style="text-align:center;padding:20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Department Admin Modal -->
+    <div class="modal" id="addDeptAdminModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add Department Admin</h2>
+                <span class="close" id="closeModal">&times;</span>
+            </div>
+            <form id="addDeptAdminForm">
+                <div class="form-group">
+                    <label for="adminName">Admin Name *</label>
+                    <input type="text" id="adminName" required placeholder="Enter admin name">
+                </div>
+                <div class="form-group">
+                    <label for="username">Username *</label>
+                    <input type="text" id="username" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" required placeholder="Enter password (min 8 characters)">
+                </div>
+                <div class="form-group">
+                    <label for="departmentId">Department *</label>
+                    <select id="departmentId" required>
+                        <option value="">Select Department</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="city">City *</label>
+                    <input type="text" id="city" required placeholder="Enter city">
+                </div>
+                <div class="form-group">
+                    <label for="email">Email (Optional)</label>
+                    <input type="email" id="email" placeholder="Enter email">
+                </div>
+                <div class="form-group">
+                    <label for="contactNumber">Contact Number (Optional)</label>
+                    <input type="tel" id="contactNumber" placeholder="Enter contact number">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width:100%">Register Department Admin</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+    <script src="../js/common/config.js"></script>
+    <script src="../js/admin/dept-admins.js"></script>
+</body>
+</html>

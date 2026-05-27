@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>Pending Approvals - Department Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 0; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f5f7fb; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--gov-text-light); border-bottom: 2px solid var(--gov-border); }
+        td { padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        tr:hover td { background: #f9fafb; }
+
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-in-progress { background: #e3f2fd; color: #1976d2; }
+        .status-resolved { background: #e8f5e9; color: #388e3c; }
+        .status-closed { background: #f5f5f5; color: #757575; }
+        .status-rejected { background: #ffebee; color: #c62828; }
+        .status-pending-approval { background: #fff3e0; color: #e65100; }
+        .priority-low { background: #e8f5e9; color: #388e3c; }
+        .priority-medium { background: #fff8e1; color: #f57f17; }
+        .priority-high { background: #ffebee; color: #c62828; }
+        .priority-critical { background: #fce4ec; color: #ad1457; }
+
+        .btn { display: inline-block; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: none; font-family: inherit; text-decoration: none; }
+        .btn-primary { background: var(--gov-saffron); color: #fff; }
+        .btn-primary:hover { background: #e68a2e; }
+        .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+        .btn-outline { background: transparent; border: 1px solid var(--gov-navy); color: var(--gov-navy; }
+        .btn-outline:hover { background: var(--gov-navy); color: #fff; }
+        .btn-green { background: var(--gov-green); color: #fff; }
+        .btn-red { background: #c62828; color: #fff; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 8px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 1.1rem; color: var(--gov-navy); }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #888; }
+        .modal-body { padding: 20px; }
+        .detail-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .detail-item label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
+        .detail-item span { display: block; font-weight: 600; color: var(--gov-text); }
+        .detail-full { margin-bottom: 16px; }
+        .detail-full label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
+        .detail-full p { margin-top: 4px; }
+
+        .proof-section { margin: 20px 0; padding: 16px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee; }
+        .proof-section h3 { font-size: 0.95rem; color: var(--gov-navy); margin-bottom: 12px; }
+        .proof-description { font-size: 0.9rem; color: #555; line-height: 1.6; margin-bottom: 12px; }
+        .proof-attachments { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+        .proof-attachment { border: 1px solid #ddd; border-radius: 4px; overflow: hidden; cursor: pointer; }
+        .proof-attachment img { width: 100%; height: 80px; object-fit: cover; display: block; }
+        .proof-attachment .file-name { padding: 4px; font-size: 0.7rem; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        .approval-actions { margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee; }
+        .approval-actions h3 { font-size: 0.95rem; color: var(--gov-navy); margin-bottom: 12px; }
+        .approval-actions textarea { width: 100%; padding: 10px; border: 1px solid var(--gov-border); border-radius: 6px; font-family: inherit; margin-bottom: 12px; min-height: 80px; }
+        .approval-actions .buttons { display: flex; gap: 10px; }
+
+        .footer { background: var(--gov-footer); color: #cdd5e0; padding: 16px 0; margin-top: 40px; text-align: center; font-size: 0.78rem; }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <span>Department Admin Portal | Government of India</span>
+            <span>Welcome, <strong id="adminName">Admin</strong> | <a href="#" id="logoutBtn">Logout</a></span>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+                <circle cx="60" cy="52" r="5" fill="#003087"/>
+                <rect x="22" y="95" width="76" height="9" rx="3" fill="#003087"/>
+                <rect x="30" y="72" width="12" height="24" rx="4" fill="#003087"/>
+                <rect x="46" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="62" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="78" y="72" width="12" height="24" rx="4" fill="#003087"/>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Department Admin Portal | Ministry of Electronics & Information Technology</div>
+                <h1>Pending Approvals</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="officers.html">Officers</a>
+            <a href="complaints.html">Complaints</a>
+            <a href="approvals.html" class="active">Pending Approvals</a>
+            <a href="reports.html">Reports</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Pending Approvals</h1>
+            <p>Review and approve proof of resolution submitted by officers</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span>Complaints Awaiting Approval</span>
+                <span id="pendingCount" class="status-badge status-pending-approval">0 Pending</span>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead><tr><th>Complaint No.</th><th>Title</th><th>Officer</th><th>Category</th><th>Priority</th><th>Submitted</th><th>Action</th></tr></thead>
+                    <tbody id="approvalsTableBody"><tr><td colspan="7" style="text-align:center;padding:30px;">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Approval Modal -->
+    <div class="modal-overlay" id="approvalModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Review Proof</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">Loading...</div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+    <script src="../js/common/config.js"></script>
+    <script src="../js/dept-admin/approvals.js"></script>
+</body>
+</html>

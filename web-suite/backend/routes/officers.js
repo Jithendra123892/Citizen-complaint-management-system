@@ -12,11 +12,23 @@ const router = express.Router();
 // @route   GET /api/officers
 // @desc    Get all officers
 // @access  Public
-router.get('/', asyncHandler(async (req, res) => {
+router.get('/', authMiddleware, asyncHandler(async (req, res) => {
     const { page = 1, limit = 10, department } = req.query;
 
     let whereClause = 'o.is_active = 1';
     const params = [];
+
+    // SuperAdmins should only see officers from their state
+    if (req.user.type === 'SuperAdmin') {
+        const superAdmin = await db.queryRow(
+            'SELECT state FROM super_admins WHERE super_admin_id = ?',
+            [req.user.referenceId]
+        );
+        if (superAdmin && superAdmin.state) {
+            whereClause += ' AND LOWER(o.state) = LOWER(?)';
+            params.push(superAdmin.state);
+        }
+    }
 
     if (department) {
         whereClause += ' AND o.department_id = ?';
@@ -34,7 +46,9 @@ router.get('/', asyncHandler(async (req, res) => {
     const total = countResult[0].total;
 
     const officers = await db.queryRaw(
-        `SELECT o.*, d.department_name
+        `SELECT o.*, d.department_name,
+            (SELECT COUNT(*) FROM complaints WHERE assigned_officer_id = o.officer_id) as assigned_count,
+            (SELECT COUNT(*) FROM complaints WHERE assigned_officer_id = o.officer_id AND status = 'Resolved') as resolved_count
          FROM officers o
          LEFT JOIN departments d ON o.department_id = d.department_id
          WHERE ${whereClause}
@@ -60,7 +74,10 @@ router.get('/:id', authMiddleware, asyncHandler(async (req, res) => {
     );
 
     if (!officer) {
-        throw new AppError('Officer not found', 404);
+        return res.status(404).json({
+            status: 'error',
+            message: 'Officer not found'
+        });
     }
 
     // Get workload stats
@@ -182,13 +199,33 @@ router.put('/:id', authMiddleware, authorize('Admin'), asyncHandler(async (req, 
     );
 
     if (!officer) {
-        throw new AppError('Officer not found', 404);
+        return res.status(404).json({
+            status: 'error',
+            message: 'Officer not found'
+        });
     }
 
     const updates = req.body;
+    const allowedFields = ['officer_name', 'badge_number', 'department_id', 'designation', 'contact_number', 'email', 'date_of_joining'];
+    const updateFields = [];
+    const updateValues = [];
+
+    for (const field of allowedFields) {
+        if (updates[field] !== undefined) {
+            updateFields.push(`${field} = ?`);
+            updateValues.push(updates[field]);
+        }
+    }
+
+    if (updateFields.length === 0) {
+        throw new AppError('No valid fields to update', 400);
+    }
+
+    updateValues.push(req.params.id);
+
     await db.query(
-        `UPDATE officers SET ? WHERE officer_id = ?`,
-        [updates, req.params.id]
+        `UPDATE officers SET ${updateFields.join(', ')} WHERE officer_id = ?`,
+        updateValues
     );
 
     const updatedOfficer = await db.queryRow(
@@ -216,7 +253,10 @@ router.put('/:id/deactivate', authMiddleware, authorize('Admin'), asyncHandler(a
     );
 
     if (!officer) {
-        throw new AppError('Officer not found', 404);
+        return res.status(404).json({
+            status: 'error',
+            message: 'Officer not found'
+        });
     }
 
     await db.query(
@@ -227,6 +267,51 @@ router.put('/:id/deactivate', authMiddleware, authorize('Admin'), asyncHandler(a
     res.json({
         status: 'success',
         message: 'Officer deactivated successfully'
+    });
+}));
+
+// @route   PUT /api/officers/:id/status
+// @desc    Update officer status (activate/deactivate)
+// @access  Private (Admin, DeptAdmin)
+router.put('/:id/status', authMiddleware, asyncHandler(async (req, res) => {
+    const { is_active } = req.body;
+
+    if (typeof is_active !== 'boolean') {
+        throw new AppError('is_active must be a boolean', 400);
+    }
+
+    const officer = await db.queryRow(
+        'SELECT * FROM officers WHERE officer_id = ?',
+        [req.params.id]
+    );
+
+    if (!officer) {
+        return res.status(404).json({
+            status: 'error',
+            message: 'Officer not found'
+        });
+    }
+
+    // Check if user has permission (Admin or DeptAdmin of same department)
+    if (req.user.type === 'DeptAdmin') {
+        const deptAdmin = await db.queryRow(
+            'SELECT department_id FROM department_admins WHERE dept_admin_id = ?',
+            [req.user.referenceId]
+        );
+
+        if (!deptAdmin || deptAdmin.department_id !== officer.department_id) {
+            throw new AppError('Access denied', 403);
+        }
+    }
+
+    await db.query(
+        'UPDATE officers SET is_active = ? WHERE officer_id = ?',
+        [is_active, req.params.id]
+    );
+
+    res.json({
+        status: 'success',
+        message: is_active ? 'Officer activated successfully' : 'Officer deactivated successfully'
     });
 }));
 

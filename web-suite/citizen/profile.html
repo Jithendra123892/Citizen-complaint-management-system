@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>My Profile - CitizenConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; }
+        .card-body { padding: 20px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--gov-text); margin-bottom: 6px; }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--gov-border); border-radius: 6px; font-size: 0.9rem; font-family: inherit;
+        }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--gov-navy); }
+        .form-group input:disabled { background: #f5f5f5; cursor: not-allowed; }
+
+        .btn { display: inline-block; padding: 10px 20px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; font-family: inherit; text-decoration: none; }
+        .btn-primary { background: var(--gov-saffron); color: #fff; }
+        .btn-primary:hover { background: #e68a2e; }
+        .btn-outline { background: transparent; border: 1px solid var(--gov-navy); color: var(--gov-navy); }
+        .btn-outline:hover { background: var(--gov-navy); color: #fff; }
+        .btn-danger { background: #c62828; color: #fff; }
+        .btn-danger:hover { background: #b71c1c; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; padding: 16px; text-align: center; }
+        .stat-card .value { font-size: 1.8rem; font-weight: 700; color: var(--gov-navy); }
+        .stat-card .label { font-size: 0.8rem; color: var(--gov-text-light); margin-top: 4px; }
+
+        .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 0.9rem; }
+        .alert-success { background: #e8f5e9; color: #388e3c; border: 1px solid #c8e6c9; }
+        .alert-error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
+        .footer { background: var(--gov-footer); color: #cdd5e0; padding: 16px 0; margin-top: 40px; text-align: center; font-size: 0.78rem; }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Complaints</a>
+            <span>Welcome, <strong id="userName">Citizen</strong></span>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+                <circle cx="60" cy="52" r="5" fill="#003087"/>
+                <rect x="22" y="95" width="76" height="9" rx="3" fill="#003087"/>
+                <rect x="30" y="72" width="12" height="24" rx="4" fill="#003087"/>
+                <rect x="46" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="62" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="78" y="72" width="12" height="24" rx="4" fill="#003087"/>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Ministry of Electronics & Information Technology | Government of India</div>
+                <h1>CitizenConnect — Jansunwai Portal</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Complaints</a>
+            <a href="../track.html">Track Complaint</a>
+            <a href="new-complaint.html">File New Complaint</a>
+            <a href="profile.html" class="active">My Profile</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>My Profile</h1>
+            <p>Manage your account information and preferences</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="value" id="totalComplaints">0</div>
+                <div class="label">Total Complaints</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="pendingComplaints">0</div>
+                <div class="label">Pending</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="resolvedComplaints">0</div>
+                <div class="label">Resolved</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="memberSince">-</div>
+                <div class="label">Member Since</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Personal Information</div>
+            <div class="card-body">
+                <form id="profileForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Full Name</label>
+                            <input type="text" id="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Aadhaar Number</label>
+                            <input type="text" id="aadhaarNumber" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone Number</label>
+                            <input type="tel" id="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Ward Number</label>
+                            <select id="ward">
+                                <option value="ward1">Ward 01</option>
+                                <option value="ward2">Ward 02</option>
+                                <option value="ward3">Ward 03</option>
+                                <option value="ward4">Ward 04</option>
+                                <option value="ward5">Ward 05</option>
+                                <option value="ward6">Ward 06</option>
+                                <option value="ward7">Ward 07</option>
+                                <option value="ward8">Ward 08</option>
+                                <option value="ward9">Ward 09</option>
+                                <option value="ward10">Ward 10</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Pincode</label>
+                            <input type="text" id="pincode" maxlength="6">
+                        </div>
+                        <div class="form-group full-width">
+                            <label>Address</label>
+                            <textarea id="address" rows="3"></textarea>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <button type="submit" class="btn btn-primary">Update Profile</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Change Password</div>
+            <div class="card-body">
+                <form id="passwordForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group"></div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="confirmPassword" required minlength="6">
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Account Actions</div>
+            <div class="card-body">
+                <p style="margin-bottom:16px; color:var(--gov-text-light);">Once you delete your account, there is no going back. Please be certain.</p>
+                <button class="btn btn-danger" id="deleteAccountBtn">Delete My Account</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+    <script src="../js/common/config.js"></script>
+    <script src="../js/citizen/profile.js"></script>
+</body>
+</html>

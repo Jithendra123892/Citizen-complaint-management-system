@@ -1,10 +1,33 @@
 # Database Setup
 
-## Option 1: Automatic Setup (Recommended)
+## Railway (Cloud — Recommended)
 
-The tables will be created automatically when you first start the server. The database connection configuration is in `config/database.js`.
+### Automatic Setup
 
-## Option 2: Manual Setup
+The database tables are **automatically created on first server start** via `initDatabase()` in `config/database.js`. No manual SQL needed for Railway.
+
+### MySQL Add-on (Railway)
+
+1. In Railway dashboard → **Add a Database** → **MySQL**
+2. Railway sets `MYSQL_URL` automatically in your project's env vars
+3. The application automatically reads `MYSQL_URL` and connects — no config needed
+4. Tables created automatically on first request to the API
+
+If you want to set up manually from Railway MySQL CLI:
+```bash
+railway connect mysql
+mysql> CREATE DATABASE IF NOT EXISTS citizen_complaint_db;
+mysql> USE citizen_complaint_db;
+-- Then run the tables below
+```
+
+## Local Development
+
+### Automatic Setup (Recommended)
+
+The tables will be created automatically when the server first starts. Ensure your `backend/.env` has correct `DB_HOST`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` values.
+
+### Manual Setup (Local MySQL)
 
 If you prefer to create tables manually, run these SQL commands:
 

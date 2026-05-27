@@ -21,7 +21,7 @@ const loginLimiter = rateLimit({
 
 const generalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: 1000, // limit each IP to 1000 requests per windowMs (increased for testing)
   message: {
     status: 'error',
     message: 'Too many requests from this IP, please try again later.'
@@ -30,31 +30,34 @@ const generalLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-// Input sanitization
+// Input sanitization - escape HTML entities to prevent XSS
+// Uses a map for clarity and correctness
+const HTML_ESCAPE_MAP = {
+  '&': '&',
+  '<': '<',
+  '>': '>',
+  '"': '"',
+  "'": '''
+};
+
+const escapeHtml = (str) => {
+  if (typeof str !== 'string') return str;
+  return str.replace(/[&<>"']/g, (chr) => HTML_ESCAPE_MAP[chr] || chr);
+};
+
 const sanitizeInput = (req, res, next) => {
-  // Sanitize request body
   if (req.body) {
     for (const key in req.body) {
       if (typeof req.body[key] === 'string') {
-        // Basic sanitization - remove potentially dangerous characters
-        req.body[key] = req.body[key]
-          .replace(/</g, '<')
-          .replace(/>/g, '>')
-          .replace(/"/g, '"')
-          .replace(/'/g, ''');
+        req.body[key] = escapeHtml(req.body[key]);
       }
     }
   }
 
-  // Sanitize query parameters
   if (req.query) {
     for (const key in req.query) {
       if (typeof req.query[key] === 'string') {
-        req.query[key] = req.query[key]
-          .replace(/</g, '<')
-          .replace(/>/g, '>')
-          .replace(/"/g, '"')
-          .replace(/'/g, ''');
+        req.query[key] = escapeHtml(req.query[key]);
       }
     }
   }
@@ -83,9 +86,20 @@ const validateInput = (input, type) => {
   }
 };
 
+// Security headers helper (adds to helmet or standalone use)
+const securityHeaders = (req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+};
+
 module.exports = {
   loginLimiter,
   generalLimiter,
   sanitizeInput,
-  validateInput
+  validateInput,
+  securityHeaders,
+  escapeHtml
 };

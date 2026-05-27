@@ -1,0 +1,51 @@
+node_modules/
+.env
+.env.local
+.env.*.local
+
+# User uploads (never commit)
+*/uploads/
+backend/uploads/
+web-suite/uploads/
+
+ruvector.db
+*.sqlite
+database.sqlite
+
+# Build artifacts
+dist/
+build/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Rail/Ver
+.railway/
+.vercel/
+railway.json
+
+# Docs
+DATABASE_QUERIES.md
+FRONTEND_REORGANIZATION_PLAN.md
+FUNCTIONALITY_TEST_CHECKLIST.md
+complaint_management*.sql
+
+# Debug/test scripts (never commit)
+**/*.js.map
+**/debug*
+**/fix*
+**/check_table*
+**/test_*
+**/run-migration*
+**/remove_constraint*
+**/full_test*
+**/fix_constraint.sql
+backend/dept-admin.js

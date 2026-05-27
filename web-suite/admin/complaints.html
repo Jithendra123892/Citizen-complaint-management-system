@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval'; script-src-attr 'self' 'unsafe-inline' 'unsafe-hashes';">
+    <title>Manage All Complaints - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-blue-bar: #003380;
+            --gov-green: #138808; --gov-gray-bg: #f0f4f8; --gov-border: #cccccc;
+            --gov-text: #1a1a1a; --gov-text-light: #4b4b4b; --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .card-body { padding: 0; }
+        .filter-bar { display: flex; gap: 10px; padding: 12px 16px; background: #f5f7fb; border-bottom: 1px solid var(--gov-border); flex-wrap: wrap; }
+        .filter-bar select, .filter-bar input { padding: 6px 10px; border: 1px solid var(--gov-border); border-radius: 4px; font-size: 0.85rem; font-family: inherit; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f5f7fb; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--gov-text-light); border-bottom: 2px solid var(--gov-border); }
+        td { padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        tr:hover td { background: #f9fafb; }
+
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .status-pending { background: #fff3e0; color: #f57c00; }
+        .status-in-progress { background: #e3f2fd; color: #1976d2; }
+        .status-resolved { background: #e8f5e9; color: #388e3c; }
+        .status-closed { background: #f5f5f5; color: #757575; }
+        .status-rejected { background: #ffebee; color: #c62828; }
+        .priority-low { background: #e8f5e9; color: #388e3c; }
+        .priority-medium { background: #fff8e1; color: #f57f17; }
+        .priority-high { background: #ffebee; color: #c62828; }
+        .priority-critical { background: #fce4ec; color: #ad1457; }
+
+        .btn { display: inline-block; padding: 6px 14px; border-radius: 6px; font-size: 0.8rem; font-weight: 500; cursor: pointer; border: none; font-family: inherit; text-decoration: none; }
+        .btn-primary { background: var(--gov-saffron); color: #fff; }
+        .btn-sm { padding: 4px 10px; font-size: 0.75rem; }
+        .btn-outline { background: transparent; border: 1px solid var(--gov-navy); color: var(--gov-navy); }
+        .btn-outline:hover { background: var(--gov-navy); color: #fff; }
+        .btn-green { background: var(--gov-green); color: #fff; }
+        .btn-red { background: #c62828; color: #fff; }
+
+        /* Modal */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 8px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h2 { font-size: 1.1rem; color: var(--gov-navy); }
+        .modal-close { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+        .modal-body { padding: 20px; }
+        .detail-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .detail-item label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
+        .detail-item span, .detail-item select { display: block; font-weight: 600; }
+        .detail-item select { width: 100%; padding: 8px; border: 1px solid var(--gov-border); border-radius: 4px; margin-top: 4px; font-family: inherit; }
+        .detail-full { margin-bottom: 16px; }
+        .detail-full label { font-size: 0.75rem; color: #888; text-transform: uppercase; }
+        .detail-full p { margin-top: 4px; }
+
+        .action-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid #eee; }
+        .action-section h3 { font-size: 0.95rem; color: var(--gov-navy); margin-bottom: 12px; }
+        .action-section .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+        .footer { background: var(--gov-footer); color: #cdd5e0; padding: 16px 0; margin-top: 40px; text-align: center; font-size: 0.78rem; }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <span>Admin Panel | Government of India</span>
+            <span>Welcome, <strong id="adminName">Admin</strong> | <a href="#" id="logoutBtn">Logout</a></span>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+                <circle cx="60" cy="52" r="5" fill="#003087"/>
+                <rect x="22" y="95" width="76" height="9" rx="3" fill="#003087"/>
+                <rect x="30" y="72" width="12" height="24" rx="4" fill="#003087"/>
+                <rect x="46" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="62" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="78" y="72" width="12" height="24" rx="4" fill="#003087"/>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Admin Panel | Ministry of Electronics & Information Technology</div>
+                <h1>Manage All Complaints</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="departments.html">Departments</a>
+            <a href="dept-admins.html">Department Admins</a>
+            <a href="complaints.html" class="active">All Complaints</a>
+            <a href="officers.html">Manage Officers</a>
+            <a href="analytics.html">Analytics</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">
+                <span>All Complaints</span>
+            </div>
+            <div class="filter-bar">
+                <select id="filterStatus"><option value="">All Status</option><option>Pending</option><option>In Progress</option><option>Resolved</option><option>Closed</option><option>Rejected</option></select>
+                <select id="filterPriority"><option value="">All Priority</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+                <select id="filterDept"><option value="">All Departments</option></select>
+                <button class="btn btn-primary btn-sm" id="applyFiltersBtn">Apply Filters</button>
+            </div>
+            <div class="card-body">
+                <table>
+                    <thead><tr><th>No.</th><th>Title</th><th>Citizen</th><th>Category</th><th>Department</th><th>Officer</th><th>Image</th><th>Priority</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody id="complaintsTableBody"><tr><td colspan="10" style="text-align:center;padding:30px;">Loading...</td></tr></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Complaint Detail & Assignment Modal -->
+    <div class="modal-overlay" id="complaintModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 id="modalTitle">Complaint Details</h2>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">Loading...</div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+    <script src="../js/common/config.js"></script>
+    <script src="../js/admin/complaints.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>Department Complaints - CitizenConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+        .page-header p { color: var(--gov-text-light); }
+
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; display: flex; justify-content: space-between; align-items: center; }
+        .card-body { padding: 0; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f5f7fb; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--gov-text-light); border-bottom: 2px solid var(--gov-border); }
+        td { padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        tr:hover { background: #f8f9fa; }
+
+        .badge { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; font-weight: 600; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+        .badge-in-progress { background: #cce5ff; color: #004085; }
+        .badge-resolved { background: #d4edda; color: #155724; }
+        .badge-rejected { background: #f8d7da; color: #721c24; }
+
+        .btn { display: inline-block; padding: 8px 16px; border: none; border-radius: 4px; font-size: 0.85rem; font-weight: 600; cursor: pointer; text-decoration: none; }
+        .btn-primary { background: var(--gov-navy); color: #fff; }
+        .btn-primary:hover { background: var(--gov-navy-dark); }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+        .footer { background: var(--gov-footer); color: #fff; padding: 20px 0; margin-top: 40px; text-align: center; font-size: 0.9rem; }
+
+        .filters { display: flex; gap: 12px; margin-bottom: 16px; flex-wrap: wrap; }
+        .filters select, .filters input { padding: 8px 12px; border: 1px solid var(--gov-border); border-radius: 4px; }
+        .filters button { padding: 8px 16px; background: var(--gov-navy); color: #fff; border: none; border-radius: 4px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <span>Government of India | Official Portal</span>
+            <span id="userInfo"></span>
+        </div>
+    </div>
+    <div class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="45" fill="none" stroke="#003087" stroke-width="2"/>
+                <circle cx="50" cy="50" r="35" fill="none" stroke="#003087" stroke-width="1.5"/>
+                <text x="50" y="55" text-anchor="middle" font-size="24" fill="#003087" font-weight="bold">🇮🇳</text>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Ministry of Administrative Reforms</div>
+                <h1>CitizenConnect - Jansunwai Portal</h1>
+            </div>
+        </div>
+    </div>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="officers.html">Officers</a>
+            <a href="complaints.html" class="active">Complaints</a>
+            <a href="reports.html">Reports</a>
+            <a href="profile.html">Profile</a>
+            <a href="#" id="logoutBtn">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Department Complaints</h1>
+            <p>View and manage complaints assigned to your department</p>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Complaints List</div>
+            <div class="card-body">
+                <div class="filters">
+                    <select id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                        <option value="Pending Approval">Pending Approval</option>
+                        <option value="Resolved">Resolved</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Closed">Closed</option>
+                    </select>
+                    <select id="categoryFilter">
+                        <option value="">All Categories</option>
+                    </select>
+                    <input type="text" id="searchInput" placeholder="Search by ID or title...">
+                    <button id="filterBtn">Filter</button>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Citizen</th>
+                            <th>Status</th>
+                            <th>Assigned To</th>
+                            <th>Priority</th>
+                            <th>Image</th>
+                            <th>Created At</th>
+                            <th>Assigned At</th>
+                            <th>Approved At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="complaintsTable">
+                        <tr><td colspan="12" style="text-align:center;padding:20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Officer Modal -->
+    <div id="assignOfficerModal" class="modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1000;">
+        <div style="background:#fff;padding:20px;border-radius:8px;max-width:500px;margin:100px auto;position:relative;">
+            <h2 style="margin-bottom:15px;color:#003087;">Assign Officer</h2>
+            <div class="form-group" style="margin-bottom:15px;">
+                <label style="display:block;margin-bottom:5px;font-weight:600;">Select Officer:</label>
+                <select id="officerDropdown" style="width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;">
+                    <option value="">Select Officer</option>
+                </select>
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+                <button id="cancelAssignBtn" style="padding:8px 16px;background:#ccc;border:none;border-radius:4px;cursor:pointer;">Cancel</button>
+                <button id="confirmAssignBtn" style="padding:8px 16px;background:#003087;color:#fff;border:none;border-radius:4px;cursor:pointer;">Assign</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+
+    <script src="../js/common/config.js"></script>
+    <script src="../js/dept-admin/complaints.js"></script>
+</body>
+</html>

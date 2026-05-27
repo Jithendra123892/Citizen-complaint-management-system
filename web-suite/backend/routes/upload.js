@@ -86,14 +86,16 @@ router.post('/:complaintId', authMiddleware, upload.array('files', 5), asyncHand
 
     // Save file records
     const uploadedFiles = [];
+    const attachmentType = req.user.type === 'Officer' ? 'officer_proof' : 'citizen';
+    
     for (const file of files) {
         const dateFolder = new Date().toISOString().split('T')[0].replace(/-/g, '/');
         const filePath = `${dateFolder}/${file.filename}`;
         
         const result = await db.query(
-            `INSERT INTO complaint_attachments (complaint_id, file_name, file_path, file_type, file_size)
-             VALUES (?, ?, ?, ?, ?)`,
-            [complaintId, file.originalname, filePath, file.mimetype, file.size]
+            `INSERT INTO complaint_attachments (complaint_id, file_name, file_path, file_type, file_size, attachment_type)
+             VALUES (?, ?, ?, ?, ?, ?)`,
+            [complaintId, file.originalname, filePath, file.mimetype, file.size, attachmentType]
         );
 
         uploadedFiles.push({
@@ -101,7 +103,8 @@ router.post('/:complaintId', authMiddleware, upload.array('files', 5), asyncHand
             originalName: file.originalname,
             savedPath: filePath,
             size: file.size,
-            type: file.mimetype
+            type: file.mimetype,
+            attachmentType: attachmentType
         });
     }
 
@@ -119,7 +122,7 @@ router.get('/:complaintId', authMiddleware, asyncHandler(async (req, res) => {
     const { complaintId } = req.params;
 
     const complaint = await db.queryRow(
-        'SELECT complaint_id, citizen_id FROM complaints WHERE complaint_id = ?',
+        'SELECT complaint_id, citizen_id, department_id, assigned_officer_id FROM complaints WHERE complaint_id = ?',
         [complaintId]
     );
 
@@ -127,8 +130,25 @@ router.get('/:complaintId', authMiddleware, asyncHandler(async (req, res) => {
         throw new AppError('Complaint not found', 404);
     }
 
+    // Citizens can only view their own complaint attachments
     if (req.user.type === 'Citizen' && complaint.citizen_id !== req.user.referenceId) {
         throw new AppError('Not authorized', 403);
+    }
+
+    // Officers can only view attachments for complaints assigned to them
+    if (req.user.type === 'Officer' && complaint.assigned_officer_id !== req.user.referenceId) {
+        throw new AppError('Not authorized', 403);
+    }
+
+    // Department Admins can only view attachments for their department's complaints
+    if (req.user.type === 'DeptAdmin') {
+        const deptAdmin = await db.queryRow(
+            'SELECT department_id FROM department_admins WHERE dept_admin_id = ?',
+            [req.user.referenceId]
+        );
+        if (!deptAdmin || deptAdmin.department_id !== complaint.department_id) {
+            throw new AppError('Not authorized', 403);
+        }
     }
 
     const attachments = await db.queryRows(

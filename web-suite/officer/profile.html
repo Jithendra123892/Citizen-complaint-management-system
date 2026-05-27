@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>My Profile - Officer Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; }
+        .card-body { padding: 20px; }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; color: var(--gov-text); margin-bottom: 6px; }
+        .form-group input, .form-group select {
+            width: 100%; padding: 10px 12px; border: 1px solid var(--gov-border); border-radius: 6px; font-size: 0.9rem; font-family: inherit;
+        }
+        .form-group input:disabled { background: #f5f5f5; cursor: not-allowed; }
+        .form-group input:focus { outline: none; border-color: var(--gov-navy); }
+
+        .btn { display: inline-block; padding: 10px 20px; border-radius: 6px; font-size: 0.9rem; font-weight: 500; cursor: pointer; border: none; font-family: inherit; }
+        .btn-primary { background: var(--gov-saffron); color: #fff; }
+        .btn-primary:hover { background: #e68a2e; }
+        .btn-outline { background: transparent; border: 1px solid var(--gov-navy); color: var(--gov-navy); }
+        .btn-outline:hover { background: var(--gov-navy); color: #fff; }
+
+        .alert { padding: 12px 16px; border-radius: 6px; margin-bottom: 16px; font-size: 0.9rem; }
+        .alert-success { background: #e8f5e9; color: #388e3c; border: 1px solid #c8e6c9; }
+        .alert-error { background: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+
+        .info-row { display: flex; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+        .info-label { width: 150px; font-weight: 600; color: var(--gov-text-light); }
+        .info-value { flex: 1; }
+
+        .footer { background: var(--gov-footer); color: #cdd5e0; padding: 16px 0; margin-top: 40px; text-align: center; font-size: 0.78rem; }
+
+        @media (max-width: 768px) {
+            .form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Complaints</a>
+            <span>Welcome, <strong id="officerName">Officer</strong></span>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+                <circle cx="60" cy="52" r="5" fill="#003087"/>
+                <rect x="22" y="95" width="76" height="9" rx="3" fill="#003087"/>
+                <rect x="30" y="72" width="12" height="24" rx="4" fill="#003087"/>
+                <rect x="46" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="62" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="78" y="72" width="12" height="24" rx="4" fill="#003087"/>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Officer Portal | Ministry of Electronics & Information Technology</div>
+                <h1>CitizenConnect — Officer Panel</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Assigned Complaints</a>
+            <a href="schedule.html">My Schedule</a>
+            <a href="profile.html" class="active">My Profile</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>My Profile</h1>
+            <p>Manage your officer account information</p>
+        </div>
+
+        <div id="alertContainer"></div>
+
+        <div class="card">
+            <div class="card-header">Officer Information</div>
+            <div class="card-body">
+                <div class="info-row">
+                    <div class="info-label">Badge Number:</div>
+                    <div class="info-value" id="badgeNumber">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Name:</div>
+                    <div class="info-value" id="officerNameDisplay">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Department:</div>
+                    <div class="info-value" id="department">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Designation:</div>
+                    <div class="info-value" id="designation">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Contact Number:</div>
+                    <div class="info-value" id="contactNumber">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Email:</div>
+                    <div class="info-value" id="email">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Date of Joining:</div>
+                    <div class="info-value" id="joiningDate">-</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Status:</div>
+                    <div class="info-value"><span id="status" style="padding:4px 10px;border-radius:12px;font-size:0.8rem;font-weight:600;background:#e8f5e9;color:#388e3c;">Active</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Update Contact Information</div>
+            <div class="card-body">
+                <form id="contactForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Contact Number</label>
+                            <input type="tel" id="updatePhone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address</label>
+                            <input type="email" id="updateEmail" required>
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <button type="submit" class="btn btn-primary">Update Contact Info</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Change Password</div>
+            <div class="card-body">
+                <form id="passwordForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Current Password</label>
+                            <input type="password" id="currentPassword" required>
+                        </div>
+                        <div class="form-group"></div>
+                        <div class="form-group">
+                            <label>New Password</label>
+                            <input type="password" id="newPassword" required minlength="6">
+                        </div>
+                        <div class="form-group">
+                            <label>Confirm New Password</label>
+                            <input type="password" id="confirmPassword" required minlength="6">
+                        </div>
+                    </div>
+                    <div style="margin-top:20px;">
+                        <button type="submit" class="btn btn-primary">Change Password</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+    <script src="../js/common/config.js"></script>
+    <script src="../js/officer/profile.js"></script>
+</body>
+</html>

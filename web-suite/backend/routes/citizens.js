@@ -110,9 +110,26 @@ router.put('/:id', authMiddleware, [
     }
 
     const updates = req.body;
+    const allowedFields = ['name', 'email', 'phone', 'address'];
+    const updateFields = [];
+    const updateValues = [];
+
+    for (const field of allowedFields) {
+        if (updates[field] !== undefined) {
+            updateFields.push(`${field} = ?`);
+            updateValues.push(updates[field]);
+        }
+    }
+
+    if (updateFields.length === 0) {
+        throw new AppError('No valid fields to update', 400);
+    }
+
+    updateValues.push(req.params.id);
+
     await db.query(
-        `UPDATE citizens SET ? WHERE citizen_id = ?`,
-        [updates, req.params.id]
+        `UPDATE citizens SET ${updateFields.join(', ')} WHERE citizen_id = ?`,
+        updateValues
     );
 
     const updatedCitizen = await db.queryRow(
@@ -170,6 +187,126 @@ router.get('/:id/complaints', authMiddleware, asyncHandler(async (req, res) => {
 
     const response = require('../utils/helpers').buildPaginationResponse(complaints, total, page, limitNum);
     res.json({ status: 'success', data: response });
+}));
+
+// @route   GET /api/citizens/profile/me
+// @desc    Get current citizen profile
+// @access  Private (Citizen)
+router.get('/profile/me', authMiddleware, asyncHandler(async (req, res) => {
+    if (req.user.type !== 'Citizen') {
+        throw new AppError('Not authorized', 403);
+    }
+
+    const citizen = await db.queryRow(
+        'SELECT * FROM citizens WHERE citizen_id = ?',
+        [req.user.referenceId]
+    );
+
+    if (!citizen) {
+        throw new AppError('Citizen not found', 404);
+    }
+
+    // Get complaint stats
+    const stats = await db.queryRow(
+        `SELECT
+            COUNT(*) as total_complaints,
+            SUM(CASE WHEN status = 'Resolved' THEN 1 ELSE 0 END) as resolved,
+            SUM(CASE WHEN status IN ('Pending', 'In Progress') THEN 1 ELSE 0 END) as pending
+         FROM complaints WHERE citizen_id = ?`,
+        [req.user.referenceId]
+    );
+
+    res.json({
+        status: 'success',
+        data: { citizen, stats }
+    });
+}));
+
+// @route   PUT /api/citizens/profile
+// @desc    Update current citizen profile
+// @access  Private (Citizen)
+router.put('/profile', authMiddleware, [
+    body('citizenName').optional().trim().notEmpty(),
+    body('phoneNumber').optional().trim(),
+    body('email').optional().isEmail(),
+    body('address').optional().trim(),
+    body('wardNumber').optional().trim(),
+    body('pincode').optional().trim()
+], asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        throw new AppError('Validation failed', 400);
+    }
+
+    if (req.user.type !== 'Citizen') {
+        throw new AppError('Not authorized', 403);
+    }
+
+    const citizen = await db.queryRow(
+        'SELECT * FROM citizens WHERE citizen_id = ?',
+        [req.user.referenceId]
+    );
+
+    if (!citizen) {
+        throw new AppError('Citizen not found', 404);
+    }
+
+    const { citizenName, email, phoneNumber, wardNumber, pincode, address } = req.body;
+
+    await db.query(
+        `UPDATE citizens SET
+            citizen_name = ?,
+            email = ?,
+            phone_number = ?,
+            ward_number = ?,
+            pincode = ?,
+            address = ?
+         WHERE citizen_id = ?`,
+        [citizenName, email, phoneNumber, wardNumber, pincode, address, req.user.referenceId]
+    );
+
+    const updatedCitizen = await db.queryRow(
+        'SELECT * FROM citizens WHERE citizen_id = ?',
+        [req.user.referenceId]
+    );
+
+    res.json({
+        status: 'success',
+        message: 'Profile updated successfully',
+        data: { citizen: updatedCitizen }
+    });
+}));
+
+// @route   DELETE /api/citizens/account
+// @desc    Delete citizen account
+// @access  Private (Citizen)
+router.delete('/account', authMiddleware, asyncHandler(async (req, res) => {
+    if (req.user.type !== 'Citizen') {
+        throw new AppError('Not authorized', 403);
+    }
+
+    const citizen = await db.queryRow(
+        'SELECT * FROM citizens WHERE citizen_id = ?',
+        [req.user.referenceId]
+    );
+
+    if (!citizen) {
+        throw new AppError('Citizen not found', 404);
+    }
+
+    // Delete citizen's complaints first (or handle according to your policy)
+    await db.query('DELETE FROM complaints WHERE citizen_id = ?', [req.user.referenceId]);
+
+    // Delete citizen
+    await db.query('DELETE FROM citizens WHERE citizen_id = ?', [req.user.referenceId]);
+
+    // Deactivate user account
+    await db.query('UPDATE users SET is_active = 0 WHERE user_id = ?', [req.user.id]);
+
+    res.json({
+        status: 'success',
+        message: 'Account deleted successfully'
+    });
 }));
 
 module.exports = router;

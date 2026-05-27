@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>My Performance - Officer Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
+        .stat-card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; padding: 20px; text-align: center; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; color: var(--gov-navy); }
+        .stat-card .label { font-size: 0.85rem; color: var(--gov-text-light); margin-top: 8px; }
+        .stat-card .trend { font-size: 0.8rem; margin-top: 4px; }
+        .trend-up { color: var(--gov-green); }
+        .trend-down { color: #c62828; }
+
+        .card { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 20px; }
+        .card-header { background: var(--gov-navy); color: #fff; padding: 14px 20px; font-weight: 600; }
+        .card-body { padding: 20px; }
+
+        table { width: 100%; border-collapse: collapse; }
+        th { background: #f5f7fb; padding: 12px 16px; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--gov-text-light); border-bottom: 2px solid var(--gov-border); }
+        td { padding: 12px 16px; border-bottom: 1px solid #eee; font-size: 0.9rem; }
+        tr:hover td { background: #f9fafb; }
+
+        .progress-bar { height: 8px; background: #eee; border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--gov-green); transition: width 0.3s; }
+        .progress-fill.warning { background: #f57c00; }
+        .progress-fill.danger { background: #c62828; }
+
+        .footer { background: var(--gov-footer); color: #cdd5e0; padding: 16px 0; margin-top: 40px; text-align: center; font-size: 0.78rem; }
+
+        @media (max-width: 768px) {
+            .stats-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Complaints</a>
+            <span>Welcome, <strong id="officerName">Officer</strong></span>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+                <circle cx="60" cy="52" r="5" fill="#003087"/>
+                <rect x="22" y="95" width="76" height="9" rx="3" fill="#003087"/>
+                <rect x="30" y="72" width="12" height="24" rx="4" fill="#003087"/>
+                <rect x="46" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="62" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="78" y="72" width="12" height="24" rx="4" fill="#003087"/>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Officer Portal | Ministry of Electronics & Information Technology</div>
+                <h1>CitizenConnect — Officer Panel</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Assigned Complaints</a>
+            <a href="performance.html" class="active">My Performance</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>My Performance</h1>
+            <p>Track your performance metrics and achievements</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="value" id="totalHandled">0</div>
+                <div class="label">Total Handled</div>
+                <div class="trend" id="totalTrend">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="resolvedCount">0</div>
+                <div class="label">Resolved</div>
+                <div class="trend" id="resolvedTrend">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="resolutionRate">0%</div>
+                <div class="label">Resolution Rate</div>
+                <div class="trend" id="rateTrend">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="avgResolutionTime">0h</div>
+                <div class="label">Avg Resolution Time</div>
+                <div class="trend" id="timeTrend">-</div>
+            </div>
+            <div class="stat-card">
+                <div class="value" id="slaCompliance">0%</div>
+                <div class="label">SLA Compliance</div>
+                <div class="trend" id="slaTrend">-</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Category-wise Performance</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Total</th>
+                            <th>Resolved</th>
+                            <th>Resolution Rate</th>
+                            <th>Avg Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryPerformance">
+                        <tr><td colspan="5" style="text-align:center;padding:20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Priority-wise Resolution</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Priority</th>
+                            <th>Total</th>
+                            <th>Resolved</th>
+                            <th>Resolution Rate</th>
+                            <th>Progress</th>
+                        </tr>
+                    </thead>
+                    <tbody id="priorityPerformance">
+                        <tr><td colspan="5" style="text-align:center;padding:20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Monthly Performance</div>
+            <div class="card-body">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Month</th>
+                            <th>Assigned</th>
+                            <th>Resolved</th>
+                            <th>Pending</th>
+                            <th>Resolution Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody id="monthlyPerformance">
+                        <tr><td colspan="5" style="text-align:center;padding:20px;">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+    <script src="../js/common/config.js"></script>
+    <script src="../js/officer/performance.js"></script>
+</body>
+</html>

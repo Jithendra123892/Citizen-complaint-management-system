@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+    <title>Help & Support - CitizenConnect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gov-saffron: #FF9933; --gov-navy: #003087; --gov-navy-dark: #1a1a6e;
+            --gov-blue-bar: #003380; --gov-green: #138808; --gov-gray-bg: #f0f4f8;
+            --gov-border: #cccccc; --gov-text: #1a1a1a; --gov-text-light: #4b4b4b;
+            --gov-footer: #1B2A6B;
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Noto Sans', sans-serif; background: var(--gov-gray-bg); color: var(--gov-text); line-height: 1.6; }
+        a { color: var(--gov-navy); text-decoration: none; }
+
+        .tricolor-strip { height: 5px; background: linear-gradient(90deg, #FF9933 33%, #fff 33%, #fff 66%, #138808 66%); }
+        .utility-bar { background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 0; font-size: 0.78rem; }
+        .utility-bar .inner { max-width: 1200px; margin: 0 auto; padding: 0 1rem; display: flex; justify-content: space-between; }
+        .site-header { background: #fff; border-bottom: 3px solid var(--gov-saffron); padding: 14px 0; }
+        .site-header .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .emblem-svg { width: 65px; height: 65px; }
+        .portal-title .ministry { font-size: 0.78rem; color: #555; text-transform: uppercase; margin-bottom: 2px; }
+        .portal-title h1 { font-size: 1.35rem; font-weight: 700; color: var(--gov-navy); }
+        .main-nav { background: var(--gov-blue-bar); }
+        .main-nav .inner { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; display: flex; }
+        .main-nav a { display: block; color: #fff; padding: 12px 16px; font-size: 0.9rem; font-weight: 500; text-decoration: none; }
+        .main-nav a:hover, .main-nav a.active { background: var(--gov-saffron); }
+
+        .container { max-width: 1200px; margin: 20px auto; padding: 0 1.5rem; }
+        .page-header { margin-bottom: 24px; }
+        .page-header h1 { font-size: 1.6rem; color: var(--gov-navy); }
+
+        .help-grid { display: grid; grid-template-columns: 250px 1fr; gap: 24px; }
+        .help-sidebar { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; padding: 16px; height: fit-content; }
+        .help-sidebar h3 { font-size: 1rem; color: var(--gov-navy); margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--gov-saffron); }
+        .help-nav a { display: block; padding: 10px 12px; color: var(--gov-text); border-radius: 6px; margin-bottom: 4px; transition: all 0.2s; }
+        .help-nav a:hover, .help-nav a.active { background: var(--gov-navy); color: #fff; }
+
+        .help-content { background: #fff; border: 1px solid var(--gov-border); border-radius: 8px; padding: 24px; }
+        .help-section { margin-bottom: 32px; }
+        .help-section:last-child { margin-bottom: 0; }
+        .help-section h2 { font-size: 1.3rem; color: var(--gov-navy); margin-bottom: 16px; }
+        .help-section h3 { font-size: 1.1rem; color: var(--gov-text); margin-bottom: 12px; margin-top: 20px; }
+        .help-section p { margin-bottom: 12px; color: var(--gov-text-light); }
+        .help-section ul { margin-left: 20px; margin-bottom: 12px; }
+        .help-section li { margin-bottom: 6px; color: var(--gov-text-light); }
+
+        .faq-item { border: 1px solid var(--gov-border); border-radius: 8px; margin-bottom: 12px; overflow: hidden; }
+        .faq-question { padding: 16px; background: #f5f7fb; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .faq-question:hover { background: #edf0f7; }
+        .faq-answer { padding: 16px; display: none; }
+        .faq-answer.show { display: block; }
+        .faq-toggle { font-size: 1.2rem; }
+
+        .contact-card { background: #f5f7fb; border-radius: 8px; padding: 20px; margin-top: 20px; }
+        .contact-card h3 { color: var(--gov-navy); margin-bottom: 12px; }
+        .contact-item { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .contact-icon { width: 32px; height: 32px; background: var(--gov-saffron); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; }
+
+        .footer { background: var(--gov-footer); color: #cdd5e0; padding: 16px 0; margin-top: 40px; text-align: center; font-size: 0.78rem; }
+
+        @media (max-width: 768px) {
+            .help-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+    <div class="utility-bar">
+        <div class="inner">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Complaints</a>
+        </div>
+    </div>
+    <header class="site-header">
+        <div class="inner">
+            <svg class="emblem-svg" viewBox="0 0 120 130" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="60" cy="52" r="28" fill="none" stroke="#003087" stroke-width="2.5"/>
+                <circle cx="60" cy="52" r="5" fill="#003087"/>
+                <rect x="22" y="95" width="76" height="9" rx="3" fill="#003087"/>
+                <rect x="30" y="72" width="12" height="24" rx="4" fill="#003087"/>
+                <rect x="46" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="62" y="68" width="12" height="28" rx="4" fill="#003087"/>
+                <rect x="78" y="72" width="12" height="24" rx="4" fill="#003087"/>
+            </svg>
+            <div class="portal-title">
+                <div class="ministry">Ministry of Electronics & Information Technology | Government of India</div>
+                <h1>CitizenConnect — Jansunwai Portal</h1>
+            </div>
+        </div>
+    </header>
+    <nav class="main-nav">
+        <div class="inner">
+            <a href="index.html">Home</a>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="complaints.html">My Complaints</a>
+            <a href="track.html">Track Complaint</a>
+            <a href="new-complaint.html">File New Complaint</a>
+            <a href="help.html" class="active">Help</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>Help & Support</h1>
+            <p>Find answers to common questions and get support</p>
+        </div>
+
+        <div class="help-grid">
+            <div class="help-sidebar">
+                <h3>Quick Links</h3>
+                <nav class="help-nav">
+                    <a href="#getting-started" class="active">Getting Started</a>
+                    <a href="#filing-complaint">Filing a Complaint</a>
+                    <a href="#tracking">Tracking Complaints</a>
+                    <a href="#account">Account Management</a>
+                    <a href="#faq">FAQs</a>
+                    <a href="#contact">Contact Us</a>
+                </nav>
+            </div>
+
+            <div class="help-content">
+                <div class="help-section" id="getting-started">
+                    <h2>Getting Started</h2>
+                    <p>Welcome to CitizenConnect! Here's how to get started with filing and tracking your complaints.</p>
+                    <h3>Registration</h3>
+                    <ul>
+                        <li>Visit the registration page and fill in your details</li>
+                        <li>Provide your Aadhaar number for verification</li>
+                        <li>Set a secure password</li>
+                        <li>Verify your email and phone number</li>
+                    </ul>
+                    <h3>Login</h3>
+                    <p>Use your registered email or phone number along with your password to login to the portal.</p>
+                </div>
+
+                <div class="help-section" id="filing-complaint">
+                    <h2>Filing a Complaint</h2>
+                    <h3>Step-by-Step Process</h3>
+                    <ol>
+                        <li>Login to your CitizenConnect account</li>
+                        <li>Click on "File New Complaint" from the dashboard</li>
+                        <li>Select the appropriate category for your complaint</li>
+                        <li>The system will automatically assign the relevant department</li>
+                        <li>Fill in the complaint title and detailed description</li>
+                        <li>Provide the exact location of the issue</li>
+                        <li>Select the priority level (Low, Medium, High, or Critical)</li>
+                        <li>Upload any supporting documents or photos</li>
+                        <li>Submit your complaint</li>
+                        <li>Note down your complaint number for future reference</li>
+                    </ol>
+                </div>
+
+                <div class="help-section" id="tracking">
+                    <h2>Tracking Complaints</h2>
+                    <p>You can track your complaint status in multiple ways:</p>
+                    <ul>
+                        <li><strong>From Dashboard:</strong> View all your complaints with current status</li>
+                        <li><strong>From My Complaints:</strong> Detailed list with filtering options</li>
+                        <li><strong>Track Page:</strong> Enter your complaint number to check status</li>
+                        <li><strong>Notifications:</strong> Receive updates on status changes</li>
+                    </ul>
+                    <h3>Status Meanings</h3>
+                    <ul>
+                        <li><strong>Pending:</strong> Complaint received, awaiting assignment</li>
+                        <li><strong>In Progress:</strong> Officer is working on your complaint</li>
+                        <li><strong>Resolved:</strong> Complaint has been addressed</li>
+                        <li><strong>Closed:</strong> Complaint is closed after resolution</li>
+                        <li><strong>Rejected:</strong> Complaint was not accepted</li>
+                    </ul>
+                </div>
+
+                <div class="help-section" id="account">
+                    <h2>Account Management</h2>
+                    <h3>Updating Profile</h3>
+                    <p>Go to "My Profile" to update your personal information, contact details, and address.</p>
+                    <h3>Changing Password</h3>
+                    <p>You can change your password from the profile section. You'll need to provide your current password for security.</p>
+                    <h3>Deleting Account</h3>
+                    <p>If you wish to delete your account, go to "My Profile" and click on "Delete My Account". This action is irreversible.</p>
+                </div>
+
+                <div class="help-section" id="faq">
+                    <h2>Frequently Asked Questions</h2>
+
+                    <div class="faq-item">
+                        <div class="faq-question faq-toggle-btn">
+                            How long does it take to resolve a complaint?
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            Resolution time varies based on the category and priority. Most complaints are resolved within 3-7 working days. Critical issues are prioritized and resolved faster.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question faq-toggle-btn">
+                            Can I file a complaint without registering?
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            No, you need to register on the portal to file complaints. Registration helps us verify your identity and provide better service.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question faq-toggle-btn">
+                            What happens after I file a complaint?
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            If your complaint is rejected, you will receive a notification with the reason. You can file a new complaint with corrected information or contact support for assistance.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question faq-toggle-btn">
+                            Can I upload photos with my complaint?
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            Yes, you can upload multiple photos and documents when filing a complaint. This helps officers better understand and address the issue.
+                        </div>
+                    </div>
+
+                    <div class="faq-item">
+                        <div class="faq-question faq-toggle-btn">
+                            How do I track my complaint status?
+                            <span class="faq-toggle">+</span>
+                        </div>
+                        <div class="faq-answer">
+                            You can track your complaint status from the "My Complaints" section in your dashboard. You'll receive notifications at every stage of the complaint resolution process.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="help-section" id="contact">
+                    <h2>Contact Us</h2>
+                    <p>If you need further assistance, please reach out to us:</p>
+
+                    <div class="contact-card">
+                        <h3>Support Contact</h3>
+                        <div class="contact-item">
+                            <div class="contact-icon">📞</div>
+                            <div>
+                                <strong>Helpline:</strong> 1800-XXX-XXXX (Toll Free)<br>
+                                <small>Available 24x7</small>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">📧</div>
+                            <div>
+                                <strong>Email:</strong> support@citizenconnect.gov.in<br>
+                                <small>Response within 24 hours</small>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <div class="contact-icon">📍</div>
+                            <div>
+                                <strong>Address:</strong><br>
+                                CitizenConnect Support Cell<br>
+                                Ministry of Electronics & IT<br>
+                                Government of India, New Delhi
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">&copy; 2024 CitizenConnect - Government of India. All rights reserved.</footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const faqToggleBtns = document.querySelectorAll('.faq-toggle-btn');
+            faqToggleBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    toggleFaq(this);
+                });
+            });
+        });
+
+        function toggleFaq(element) {
+            const answer = element.nextElementSibling;
+            const toggle = element.querySelector('.faq-toggle');
+
+            if (answer.classList.contains('show')) {
+                answer.classList.remove('show');
+                toggle.textContent = '+';
+            } else {
+                answer.classList.add('show');
+                toggle.textContent = '-';
+            }
+        }
+
+        document.querySelectorAll('.help-nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                document.querySelectorAll('.help-nav a').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

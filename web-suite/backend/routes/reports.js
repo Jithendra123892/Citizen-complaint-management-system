@@ -282,11 +282,152 @@ router.get('/export', authMiddleware, authorize('Admin'), asyncHandler(async (re
     });
 }));
 
+// @route   POST /api/reports/department
+// @desc    Generate department report
+// @access  Private (DeptAdmin, Admin)
+router.post('/department', authMiddleware, asyncHandler(async (req, res) => {
+    const { reportType = 'complaint-summary', startDate, endDate } = req.body;
+
+    let reportData = {};
+    const params = [];
+
+    // Get department ID based on user type
+    let departmentId;
+    if (req.user.type === 'DeptAdmin') {
+        const deptAdmin = await db.queryRow(
+            'SELECT department_id FROM department_admins WHERE dept_admin_id = ?',
+            [req.user.referenceId]
+        );
+        departmentId = deptAdmin ? deptAdmin.department_id : null;
+    } else if (req.user.type === 'SuperAdmin') {
+        departmentId = null; // Admin can see all
+    } else {
+        throw new AppError('Access denied', 403);
+    }
+
+    let whereClause = '1=1';
+    if (departmentId) {
+        whereClause += ' AND c.department_id = ?';
+        params.push(departmentId);
+    }
+    if (startDate) {
+        whereClause += ' AND DATE(c.created_at) >= ?';
+        params.push(startDate);
+    }
+    if (endDate) {
+        whereClause += ' AND DATE(c.created_at) <= ?';
+        params.push(endDate);
+    }
+
+    switch (reportType) {
+        case 'complaint-summary':
+            reportData = await db.queryRow(
+                `SELECT
+                    COUNT(*) as total,
+                    SUM(CASE WHEN c.status = 'Pending' THEN 1 ELSE 0 END) as pending,
+                    SUM(CASE WHEN c.status = 'In Progress' THEN 1 ELSE 0 END) as in_progress,
+                    SUM(CASE WHEN c.status = 'Resolved' THEN 1 ELSE 0 END) as resolved,
+                    SUM(CASE WHEN c.status = 'Rejected' THEN 1 ELSE 0 END) as rejected
+                 FROM complaints c
+                 WHERE ${whereClause}`,
+                params
+            );
+            break;
+
+        case 'officer-performance':
+            reportData.officers = await db.queryRows(
+                `SELECT
+                    o.officer_id, o.officer_name, o.badge_number,
+                    COUNT(c.complaint_id) as assigned,
+                    SUM(CASE WHEN c.status = 'Resolved' THEN 1 ELSE 0 END) as resolved,
+                    ROUND(SUM(CASE WHEN c.status = 'Resolved' THEN 1 ELSE 0 END) * 100.0 / NULLIF(COUNT(c.complaint_id), 0), 2) as resolution_rate
+                 FROM officers o
+                 LEFT JOIN complaints c ON o.officer_id = c.assigned_officer_id
+                 WHERE ${departmentId ? 'o.department_id = ?' : '1=1'}
+                 ${departmentId ? '' : ''}
+                 GROUP BY o.officer_id, o.officer_name, o.badge_number
+                 ORDER BY resolution_rate DESC`,
+                departmentId ? [departmentId] : []
+            );
+            break;
+
+        case 'category-breakdown':
+            reportData.categories = await db.queryRows(
+                `SELECT
+                    ct.category_name,
+                    COUNT(c.complaint_id) as count,
+                    SUM(CASE WHEN c.status = 'Resolved' THEN 1 ELSE 0 END) as resolved
+                 FROM complaint_categories ct
+                 LEFT JOIN complaints c ON ct.category_id = c.category_id
+                 WHERE ${departmentId ? 'c.department_id = ?' : '1=1'}
+                 ${departmentId ? '' : ''}
+                 GROUP BY ct.category_id, ct.category_name
+                 ORDER BY count DESC`,
+                departmentId ? [departmentId] : []
+            );
+            break;
+
+        case 'time-analysis':
+            reportData = await db.queryRow(
+                `SELECT
+                    AVG(TIMESTAMPDIFF(HOUR, c.created_at, c.resolved_at)) as avg_resolution_hours,
+                    MIN(TIMESTAMPDIFF(HOUR, c.created_at, c.resolved_at)) as min_resolution_hours,
+                    MAX(TIMESTAMPDIFF(HOUR, c.created_at, c.resolved_at)) as max_resolution_hours
+                 FROM complaints c
+                 WHERE c.status = 'Resolved' AND c.resolved_at IS NOT NULL AND ${whereClause}`,
+                params
+            );
+            break;
+
+        case 'trend-analysis':
+            reportData.monthly = await db.queryRows(
+                `SELECT
+                    DATE_FORMAT(c.created_at, '%Y-%m') as month,
+                    COUNT(*) as total,
+                    SUM(CASE WHEN c.status = 'Resolved' THEN 1 ELSE 0 END) as resolved
+                 FROM complaints c
+                 WHERE ${whereClause}
+                 GROUP BY DATE_FORMAT(c.created_at, '%Y-%m')
+                 ORDER BY month DESC
+                 LIMIT 12`,
+                params
+            );
+            break;
+
+        case 'citizen-feedback':
+            reportData = await db.queryRow(
+                `SELECT
+                    AVG(c.rating) as avg_rating,
+                    COUNT(c.rating) as total_ratings,
+                    SUM(CASE WHEN c.rating >= 4 THEN 1 ELSE 0 END) as positive,
+                    SUM(CASE WHEN c.rating < 3 THEN 1 ELSE 0 END) as negative
+                 FROM complaints c
+                 WHERE c.rating IS NOT NULL AND ${whereClause}`,
+                params
+            );
+            break;
+
+        default:
+            throw new AppError('Invalid report type', 400);
+    }
+
+    res.json({
+        status: 'success',
+        data: reportData,
+        meta: {
+            reportType,
+            startDate,
+            endDate,
+            generatedAt: new Date()
+        }
+    });
+}));
+
 function convertToCSV(data) {
     if (!data.length) return '';
-    
+
     const headers = Object.keys(data[0]);
-    const rows = data.map(row => 
+    const rows = data.map(row =>
         headers.map(header => {
             const value = row[header];
             if (typeof value === 'string' && value.includes(',')) {
@@ -295,7 +436,7 @@ function convertToCSV(data) {
             return value || '';
         }).join(',')
     );
-    
+
     return [headers.join(','), ...rows].join('\n');
 }
 

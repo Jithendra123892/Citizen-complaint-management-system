@@ -129,6 +129,7 @@ async function setupDatabase() {
                 file_path VARCHAR(500) NOT NULL,
                 file_type VARCHAR(50),
                 file_size INT,
+                attachment_type ENUM('citizen', 'officer_proof') DEFAULT 'citizen',
                 uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (complaint_id) REFERENCES complaints(complaint_id) ON DELETE CASCADE
             )`,
@@ -236,14 +237,16 @@ async function insertSampleData() {
         ('John Doe', '123456789012', 'john.doe@email.com', '9876543210', '123 Main Street, Chennai', 'Ward 15', '600001')`);
     console.log('✅ Sample citizen inserted');
     
-    // Insert sample user (password: password123)
+    // Insert sample user with random password
     const bcrypt = require('bcryptjs');
-    const passwordHash = await bcrypt.hash('password123', 10);
+    const password = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase();
+    const passwordHash = await bcrypt.hash(password, 10);
     await pool.query(`INSERT INTO users (username, password_hash, user_type, reference_id) VALUES 
         ('citizen', '${passwordHash}', 'Citizen', 1),
         ('admin', '${passwordHash}', 'Admin', NULL),
         ('officer', '${passwordHash}', 'Officer', 1)`);
-    console.log('✅ Sample users inserted (password: password123)');
+    console.log(`✅ Sample users inserted (password: ${password})`);
+    console.log('⚠️  IMPORTANT: Save this password securely!');
     
     // Insert sample complaints
     await pool.query(`INSERT INTO complaints (complaint_number, citizen_id, category_id, department_id, assigned_officer_id, complaint_title, complaint_description, location, priority, status) VALUES 
