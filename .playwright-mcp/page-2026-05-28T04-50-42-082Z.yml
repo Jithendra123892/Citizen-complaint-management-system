@@ -1,0 +1,169 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - banner [ref=e4]:
+      - link [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img [ref=e8]
+      - navigation [ref=e11]:
+        - link [ref=e12] [cursor=pointer]:
+          - /url: /features
+          - text: Features
+        - link [ref=e13] [cursor=pointer]:
+          - /url: https://blog.railway.com
+          - text: Blog
+        - link [ref=e14] [cursor=pointer]:
+          - /url: https://docs.railway.com
+          - text: Docs
+        - link [ref=e15] [cursor=pointer]:
+          - /url: /about
+          - text: About
+        - link [ref=e16] [cursor=pointer]:
+          - /url: https://station.railway.com
+          - text: Help
+        - link [ref=e17] [cursor=pointer]:
+          - /url: /careers
+          - generic [ref=e18]: Careers
+          - generic [ref=e19]: "7"
+        - link [ref=e20] [cursor=pointer]:
+          - /url: /pricing
+          - text: Pricing
+        - button [ref=e21] [cursor=pointer]: Login
+    - main [ref=e22]
+    - contentinfo [ref=e23]:
+      - generic [ref=e24]:
+        - generic [ref=e25]:
+          - generic [ref=e26]:
+            - generic [ref=e27]:
+              - link [ref=e28] [cursor=pointer]:
+                - /url: /
+                - img [ref=e29]
+              - link [ref=e32] [cursor=pointer]:
+                - /url: https://status.railway.com
+                - generic [ref=e33]: All systems operational
+                - generic [ref=e34]: ↗
+              - separator [ref=e35]
+            - generic [ref=e36]: Copyright © 2026 Railway Corp. All rights reserved.
+          - link [ref=e37] [cursor=pointer]:
+            - /url: https://trust.railway.com
+            - img [ref=e38]
+            - img [ref=e40]
+        - generic [ref=e52]:
+          - paragraph [ref=e53]: Product
+          - list [ref=e54]:
+            - listitem [ref=e55]:
+              - link [ref=e56] [cursor=pointer]:
+                - /url: /features
+                - text: Features
+            - listitem [ref=e57]:
+              - link [ref=e58] [cursor=pointer]:
+                - /url: https://docs.railway.com
+                - text: Docs
+            - listitem [ref=e59]:
+              - link [ref=e60] [cursor=pointer]:
+                - /url: /changelog
+                - text: Changelog
+            - listitem [ref=e61]:
+              - link [ref=e62] [cursor=pointer]:
+                - /url: /pricing
+                - text: Pricing
+            - listitem [ref=e63]:
+              - link [ref=e64] [cursor=pointer]:
+                - /url: /deploy
+                - text: Templates
+            - listitem [ref=e65]:
+              - link [ref=e66] [cursor=pointer]:
+                - /url: /open-source-kickback
+                - text: OSS Kickback
+            - listitem [ref=e67]:
+              - link [ref=e68] [cursor=pointer]:
+                - /url: /heroku
+                - text: Migrate from Heroku
+        - generic [ref=e69]:
+          - paragraph [ref=e70]: Company
+          - list [ref=e71]:
+            - listitem [ref=e72]:
+              - link [ref=e73] [cursor=pointer]:
+                - /url: /about
+                - text: About
+            - listitem [ref=e74]:
+              - link [ref=e75] [cursor=pointer]:
+                - /url: /careers
+                - text: Careers
+            - listitem [ref=e76]:
+              - link [ref=e77] [cursor=pointer]:
+                - /url: https://blog.railway.com
+                - text: Blog
+            - listitem [ref=e78]:
+              - link [ref=e79] [cursor=pointer]:
+                - /url: https://shop.railway.com
+                - text: Shop
+            - listitem [ref=e80]:
+              - link [ref=e81] [cursor=pointer]:
+                - /url: https://trust.railway.com
+                - text: Trust
+        - generic [ref=e82]:
+          - paragraph [ref=e83]: Contact
+          - list [ref=e84]:
+            - listitem [ref=e85]:
+              - link [ref=e86] [cursor=pointer]:
+                - /url: https://station.railway.com
+                - text: Support
+            - listitem [ref=e87]:
+              - link [ref=e88] [cursor=pointer]:
+                - /url: https://discord.gg/railway
+                - text: Discord
+            - listitem [ref=e89]:
+              - link [ref=e90] [cursor=pointer]:
+                - /url: https://twitter.com/Railway
+                - text: Twitter
+            - listitem [ref=e91]:
+              - link [ref=e92] [cursor=pointer]:
+                - /url: https://github.com/railwayapp
+                - text: GitHub
+            - listitem [ref=e93]:
+              - link [ref=e94] [cursor=pointer]:
+                - /url: mailto:team@railway.com
+                - text: Email
+            - listitem [ref=e95]:
+              - link [ref=e96] [cursor=pointer]:
+                - /url: /dashboard/#enterprise-calendar-embed
+                - text: Enterprise
+        - generic [ref=e97]:
+          - paragraph [ref=e98]: Legal
+          - list [ref=e99]:
+            - listitem [ref=e100]:
+              - link [ref=e101] [cursor=pointer]:
+                - /url: /legal/acceptable-use
+                - text: Acceptable Use
+            - listitem [ref=e102]:
+              - link [ref=e103] [cursor=pointer]:
+                - /url: /legal/privacy
+                - text: Privacy Policy
+            - listitem [ref=e104]:
+              - link [ref=e105] [cursor=pointer]:
+                - /url: /legal/terms
+                - text: Terms of Service
+            - listitem [ref=e106]:
+              - link [ref=e107] [cursor=pointer]:
+                - /url: /legal/enterprise-agreement
+                - text: Enterprise Agreement
+            - button [ref=e108] [cursor=pointer]: Cookie Preferences
+            - listitem [ref=e109]:
+              - link [ref=e110] [cursor=pointer]:
+                - /url: /bug-bounty
+                - text: Bug Bounty Program
+  - dialog "Login" [active] [ref=e112]:
+    - heading "Login" [level=3] [ref=e114]
+    - generic [ref=e115]:
+      - button "Dismiss"
+    - generic [ref=e117]:
+      - generic [ref=e118]:
+        - generic [ref=e124]:
+          - img "Railway Logo" [ref=e126]
+          - generic [ref=e129]:
+            - paragraph [ref=e130]: Welcome to Railway
+            - paragraph [ref=e131]: Instant deployments, effortless scale
+        - button "Continue with GitHub" [ref=e133] [cursor=pointer]:
+          - img [ref=e135]
+          - generic [ref=e137]: Continue with GitHub
+      - button "Log in using email" [ref=e138] [cursor=pointer]

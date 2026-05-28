@@ -1,0 +1,16 @@
+- banner [ref=e6]:
+  - link "Railway Logo" [ref=e8] [cursor=pointer]:
+    - /url: /dashboard
+    - img "Railway Logo" [ref=e10]
+  - navigation [ref=e13]:
+    - generic [ref=e15]:
+      - button "Toggle activity" [ref=e17] [cursor=pointer]:
+        - img [ref=e19]
+      - button [ref=e21] [cursor=pointer]:
+        - img [ref=e24]
+      - img [ref=e27]
+      - button "Agent" [ref=e29] [cursor=pointer]:
+        - img [ref=e31]
+        - text: Agent
+      - button [ref=e33] [cursor=pointer]:
+        - generic "MADDALA JITHENDRA" [ref=e35]

@@ -37,7 +37,7 @@ const HTML_ESCAPE_MAP = {
   '<': '<',
   '>': '>',
   '"': '"',
-  "'": '''
+  "'": "'"
 };
 
 const escapeHtml = (str) => {

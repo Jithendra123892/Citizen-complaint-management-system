@@ -1,0 +1,152 @@
+- generic [ref=e3]:
+  - complementary [ref=e4]:
+    - generic [ref=e5]:
+      - generic [ref=e6]:
+        - link "Railway Logo" [ref=e7] [cursor=pointer]:
+          - /url: /dashboard
+          - img "Railway Logo" [ref=e9]
+        - button [ref=e13] [cursor=pointer]:
+          - generic [ref=e15]:
+            - generic "MADDALA JITHENDRA 's Projects" [ref=e16]
+            - img [ref=e19]
+      - navigation [ref=e23]:
+        - link [ref=e25] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e28]
+        - link [ref=e31] [cursor=pointer]:
+          - /url: /workspace/templates
+          - img [ref=e34]
+        - link [ref=e39] [cursor=pointer]:
+          - /url: /workspace/usage
+          - img [ref=e42]
+        - link [ref=e45] [cursor=pointer]:
+          - /url: /workspace/people
+          - img [ref=e48]
+        - link [ref=e53] [cursor=pointer]:
+          - /url: /workspace
+          - img [ref=e56]
+      - generic [ref=e60]:
+        - link [ref=e62] [cursor=pointer]:
+          - /url: https://docs.railway.com
+          - generic [ref=e64]:
+            - img [ref=e66]
+            - img [ref=e70]
+        - link [ref=e73] [cursor=pointer]:
+          - /url: https://station.railway.com
+          - generic [ref=e75]:
+            - img [ref=e77]
+            - img [ref=e85]
+        - link [ref=e88] [cursor=pointer]:
+          - /url: https://backboard.railway.com/csc/auth/login?redirect_uri=https%3A%2F%2Fstation-server.railway.com%2Fauth%2Fcallback%3FredirectTo%3D%252Fmy-threads
+          - generic [ref=e90]:
+            - img [ref=e92]
+            - img [ref=e95]
+    - button [ref=e99] [cursor=pointer]:
+      - generic "MADDALA JITHENDRA" [ref=e101]
+    - button "Expand sidebar" [ref=e103]
+  - generic [ref=e105]:
+    - banner [ref=e106]:
+      - generic [ref=e107]:
+        - button "4" [ref=e108] [cursor=pointer]:
+          - generic [ref=e109]:
+            - img [ref=e111]
+            - generic [ref=e113]: "4"
+        - button "30 days or $5.00 left" [ref=e115] [cursor=pointer]:
+          - paragraph [ref=e117]:
+            - generic [ref=e118]: 30 days or $5.00 left
+    - main [ref=e120]:
+      - generic [ref=e122]:
+        - generic [ref=e123]:
+          - heading "Projects" [level=1] [ref=e124]
+          - button "New" [ref=e125] [cursor=pointer]:
+            - img [ref=e127]
+            - generic [ref=e129]: New
+        - generic [ref=e132]:
+          - generic [ref=e133]:
+            - generic [ref=e134]: 30 days or $5.00
+            - generic [ref=e135]: "|"
+            - generic [ref=e136]: Upgrade to keep your services online.
+          - link "Choose a Plan" [ref=e137] [cursor=pointer]:
+            - /url: /workspace/plans
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - generic [ref=e140]:
+              - button "2 Projects" [ref=e142] [cursor=pointer]:
+                - img [ref=e144]
+                - text: 2 Projects
+              - generic [ref=e147]:
+                - generic [ref=e148]: Project sort
+                - generic [ref=e149]:
+                  - combobox "Project sort" [ref=e150] [cursor=pointer]:
+                    - 'option "Sort By: Recent Activity" [selected]'
+                    - 'option "Sort By: Creation Date"'
+                    - 'option "Sort By: Alphabetical"'
+                  - generic:
+                    - generic:
+                      - img
+            - group "View display" [ref=e152]:
+              - radio [checked] [ref=e153] [cursor=pointer]:
+                - img [ref=e157]
+              - radio [ref=e159] [cursor=pointer]:
+                - img [ref=e162]
+          - generic [ref=e164]:
+            - generic [ref=e166]:
+              - link "View Project" [ref=e167] [cursor=pointer]:
+                - /url: /project/08ad96e5-8749-47a4-bc61-44ee6151aa94?
+                - generic [ref=e168]: View Project
+              - generic:
+                - generic:
+                  - generic:
+                    - generic: spectacular-peace
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                    - generic:
+                      - generic: No services
+            - generic [ref=e170]:
+              - link "View Project" [ref=e171] [cursor=pointer]:
+                - /url: /project/ee9c1022-cc5e-4d47-9a88-fa584a1a49b4?
+                - generic [ref=e172]: View Project
+              - generic:
+                - generic:
+                  - generic:
+                    - generic: virtuous-balance
+                - generic:
+                  - generic:
+                    - generic:
+                      - generic:
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                        - generic:
+                          - img
+                    - generic:
+                      - generic: No services
