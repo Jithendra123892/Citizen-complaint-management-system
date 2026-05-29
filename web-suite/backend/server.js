@@ -40,7 +40,7 @@ const { generalLimiter, sanitizeInput, securityHeaders } = require('./middleware
 const db = require('./config/database');
 
 const app = express();
-app.set('trust proxy', true);
+app.set('trust proxy', 1);
 const PORT = process.env.PORT || 5000;
 
 // CORS configured via environment variables for flexibility in deployment

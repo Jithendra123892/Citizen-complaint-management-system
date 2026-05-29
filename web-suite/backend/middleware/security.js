@@ -8,24 +8,26 @@ const rateLimit = require('express-rate-limit');
 
 // Rate limiting
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 5,
   message: {
     status: 'error',
     message: 'Too many login attempts, please try again later.'
   },
+  trustProxy: true,
   skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 1000, // limit each IP to 1000 requests per windowMs
+  windowMs: 15 * 60 * 1000,
+  max: 1000,
   message: {
     status: 'error',
     message: 'Too many requests from this IP, please try again later.'
   },
+  trustProxy: true,
   standardHeaders: true,
   legacyHeaders: false,
 });
