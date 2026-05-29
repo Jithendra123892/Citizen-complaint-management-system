@@ -96,7 +96,7 @@ function renderComplaintsTable(complaints) {
         }) : null;
         
         var imageHtml = firstImage 
-            ? '<img src="/uploads/' + (firstImage.file_path || firstImage.file_name) + '" alt="Attachment" style="width:80px;height:80px;object-fit:cover;border-radius:4px;cursor:pointer;transition:transform 0.2s;" onerror="this.style.display=\'none\';" data-image-url="/uploads/' + (firstImage.file_path || firstImage.file_name) + '" class="complaint-image">' 
+            ? '<img src="/uploads/' + (firstImage.file_path || firstImage.file_name) + '" alt="Attachment" style="width:80px;height:80px;object-fit:cover;border-radius:4px;cursor:pointer;transition:transform 0.2s;" data-image-url="/uploads/' + (firstImage.file_path || firstImage.file_name) + '" class="complaint-image">' 
             : '<span style="color:#999;font-size:0.8rem;">No image</span>';
         
         return '<tr>' +
@@ -115,6 +115,9 @@ function renderComplaintsTable(complaints) {
     
     // Add event listeners for complaint images
     tbody.querySelectorAll('.complaint-image').forEach(function(img) {
+        img.addEventListener('error', function() {
+            this.style.display = 'none';
+        });
         img.addEventListener('click', function() {
             var imageUrl = this.getAttribute('data-image-url');
             if (imageUrl) {
