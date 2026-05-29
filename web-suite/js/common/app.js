@@ -20,6 +20,12 @@ const state = {
 };
 
 // ========================================
+// Security Utilities
+// ========================================
+const HTML_ESCAPE_MAP = {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'};
+const escapeHtml = (str) => { if (typeof str !== 'string') return str; return str.replace(/[&<>"']/g, (chr) => HTML_ESCAPE_MAP[chr] || chr); };
+const createElement = (tag, options = {}) => { const el = document.createElement(tag); if (options.text) el.textContent = options.text; if (options.html) el.innerHTML = escapeHtml(options.html); if (options.className) el.className = options.className; if (options.id) el.id = options.id; if (options.style) Object.assign(el.style, options.style); if (options.attrs) { for (const [k, v] of Object.entries(options.attrs)) el.setAttribute(k, escapeHtml(v)); } if (options.on) { for (const [event, handler] of Object.entries(options.on)) el.addEventListener(event, handler); } return el; };
+// ========================================
 // Utility Functions
 // ========================================
 const $ = (selector) => document.querySelector(selector);
