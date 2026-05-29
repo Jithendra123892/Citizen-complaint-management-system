@@ -14,10 +14,10 @@ const loginLimiter = rateLimit({
     status: 'error',
     message: 'Too many login attempts, please try again later.'
   },
-  trustProxy: true,
   skipSuccessfulRequests: true,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false }
 });
 
 const generalLimiter = rateLimit({
@@ -27,9 +27,9 @@ const generalLimiter = rateLimit({
     status: 'error',
     message: 'Too many requests from this IP, please try again later.'
   },
-  trustProxy: true,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false }
 });
 
 // Input sanitization - escape HTML entities to prevent XSS
