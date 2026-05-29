@@ -1,5 +1,12 @@
 var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || '/api';
 
+function escapeHtml(text) {
+ if (text === null || text === undefined) return '';
+ const div = document.createElement('div');
+ div.textContent = text;
+ return div.innerHTML;
+ }
+
 document.addEventListener('DOMContentLoaded', function() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
@@ -98,7 +105,7 @@ function displayStatusHistory(history, complaintCreatedDate) {
             <div class="timeline-marker"></div>
             <div class="timeline-content">
                 <p>Complaint Filed</p>
-                <span>${filedDate.toLocaleString()}</span>
+                <span>
             </div>
         </div>
     `;

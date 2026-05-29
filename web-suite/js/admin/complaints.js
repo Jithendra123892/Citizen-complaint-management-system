@@ -121,7 +121,7 @@
             const firstImage = hasImage ? complaint.attachments.find(att => att.file_type && att.file_type.startsWith('image/')) : null;
             
             const imageHtml = firstImage 
-                ? `<img src="/uploads/${firstImage.file_path || firstImage.file_name}" alt="Attachment" style="width:80px;height:80px;object-fit:cover;border-radius:4px;cursor:pointer;transition:transform 0.2s;" onerror="this.style.display='none';" data-image-url="/uploads/${firstImage.file_path || firstImage.file_name}" class="complaint-image">` 
+                ? `<img src="/uploads/${firstImage.file_path || firstImage.file_name}" alt="Attachment" style="width:80px;height:80px;object-fit:cover;border-radius:4px;cursor:pointer;transition:transform 0.2s;" data-image-url="/uploads/${firstImage.file_path || firstImage.file_name}" class="complaint-image">` 
                 : '<span style="color:#999;font-size:0.8rem;">No image</span>';
             
             return `
@@ -163,6 +163,9 @@
             });
             img.addEventListener('mouseout', function() {
                 this.style.transform = 'scale(1)';
+            });
+            img.addEventListener('error', function() {
+                this.style.display = 'none';
             });
         });
     }
@@ -214,7 +217,7 @@
                             ${citizenAttachments.map(att => `
                                 <div style="border:1px solid #ddd;border-radius:8px;padding:12px;text-align:center;">
                                     ${(att.file_type && att.file_type.startsWith('image/')) 
-                                        ? `<img src="/uploads/${att.file_path || att.file_name}" alt="${att.file_name}" style="max-width:100%;max-height:100px;object-fit:contain;border-radius:4px;margin-bottom:8px;cursor:pointer;" onerror="this.style.display='none';" data-image-url="/uploads/${att.file_path || att.file_name}" class="modal-attachment-image">` 
+                                        ? `<img src="/uploads/${att.file_path || att.file_name}" alt="${att.file_name}" style="max-width:100%;max-height:100px;object-fit:contain;border-radius:4px;margin-bottom:8px;cursor:pointer;" data-image-url="/uploads/${att.file_path || att.file_name}" class="modal-attachment-image">` 
                                         : '<div style="font-size:2rem;margin-bottom:8px;">📎</div>'}
                                     <div style="font-size:0.8rem;color:#666;word-break:break-all;margin-bottom:8px;">${att.file_name || att.original_name || 'Attachment'}</div>
                                     <a href="/uploads/${att.file_path || att.file_name}" target="_blank" style="display:inline-block;padding:4px 12px;border:1px solid #003087;color:#003087;border-radius:4px;font-size:0.75rem;text-decoration:none;">Download</a>
@@ -232,7 +235,7 @@
                             ${officerProofAttachments.map(att => `
                                 <div style="border:1px solid #ddd;border-radius:8px;padding:12px;text-align:center;">
                                     ${(att.file_type && att.file_type.startsWith('image/')) 
-                                        ? `<img src="/uploads/${att.file_path || att.file_name}" alt="${att.file_name}" style="max-width:100%;max-height:100px;object-fit:contain;border-radius:4px;margin-bottom:8px;cursor:pointer;" onerror="this.style.display='none';" data-image-url="/uploads/${att.file_path || att.file_name}" class="modal-attachment-image">` 
+                                        ? `<img src="/uploads/${att.file_path || att.file_name}" alt="${att.file_name}" style="max-width:100%;max-height:100px;object-fit:contain;border-radius:4px;margin-bottom:8px;cursor:pointer;" data-image-url="/uploads/${att.file_path || att.file_name}" class="modal-attachment-image">` 
                                         : '<div style="font-size:2rem;margin-bottom:8px;">📎</div>'}
                                     <div style="font-size:0.8rem;color:#666;word-break:break-all;margin-bottom:8px;">${att.file_name || att.original_name || 'Attachment'}</div>
                                     <a href="/uploads/${att.file_path || att.file_name}" target="_blank" style="display:inline-block;padding:4px 12px;border:1px solid #003087;color:#003087;border-radius:4px;font-size:0.75rem;text-decoration:none;">Download</a>

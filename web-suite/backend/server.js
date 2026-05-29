@@ -91,7 +91,7 @@ app.use(helmet({
             scriptSrc: ["'self'", "'unsafe-inline'", "'unsafe-eval'", "'unsafe-hashes'"],
             styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
             imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "https://citizen-complaint-management-system-production.up.railway.app"],
+            connectSrc: ["'self'", "https://citizen-complaint-management-system-production.up.railway.app", "https://citizen-complaint-management-system-production.up.railway.app:5000", "ws:", "wss:"],
             fontSrc: ["'self'", "https://fonts.googleapis.com", "https://fonts.gstatic.com", "data:"],
             objectSrc: ["'none'"],
             mediaSrc: ["'self'"],
