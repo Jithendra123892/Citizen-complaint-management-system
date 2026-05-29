@@ -41,7 +41,7 @@ const db = require('./config/database');
 
 const app = express();
 app.set('trust proxy', 1);
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || process.env.RAILWAY_PORT || 3000;
 
 // CORS configured via environment variables for flexibility in deployment
 app.use(cors({
