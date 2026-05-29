@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || 'http://localhost:5000/api';
+    var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || '/api';
     let currentUser = null;
 
     // Check authentication and user type

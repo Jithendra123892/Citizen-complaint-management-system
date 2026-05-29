@@ -2,7 +2,7 @@
     'use strict';
 
     // Use centralized config if available, fallback to localhost
-    var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || 'http://localhost:5000/api';
+    var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || '/api';
 
     // Auth guard: redirect to login on 401 Unauthorized
     function handleAuthError() {

@@ -7,7 +7,7 @@
 // Uses window.APP_CONFIG if available (set by js/common/config.js), fallback to localhost
 const API_BASE_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) ||
                       (typeof process !== 'undefined' && process.env && process.env.REACT_APP_API_URL) ||
-                      'http://localhost:5000/api';
+                      '/api';
 
 // ========================================
 // State Management

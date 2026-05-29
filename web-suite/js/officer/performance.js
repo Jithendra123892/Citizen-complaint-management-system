@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) ? window.APP_CONFIG.API_BASE_URL : 'http://localhost:5000/api';
+    var API_BASE = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) ? window.APP_CONFIG.API_BASE_URL : '/api';
 
     // Prevent redirect loops
     if (sessionStorage.getItem('redirecting') === 'true') {

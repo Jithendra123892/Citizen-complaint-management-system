@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loadComplaintDetails();
 });
 
-var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || 'http://localhost:5000/api';
+var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || '/api';
 
 async function loadComplaintDetails() {
     const urlParams = new URLSearchParams(window.location.search);

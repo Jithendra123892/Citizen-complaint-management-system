@@ -5,7 +5,7 @@
 
 const axios = require('axios');
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = '/api';
 
 const testAPI = async () => {
     console.log('🧪 Testing Smart Citizen Complaint Management System API\n');

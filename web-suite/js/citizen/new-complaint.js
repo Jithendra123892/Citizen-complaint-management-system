@@ -1,4 +1,4 @@
-var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || 'http://localhost:5000/api';
+var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || '/api';
 // Load user info on page load
 document.addEventListener('DOMContentLoaded', function() {
     const user = JSON.parse(localStorage.getItem('user') || '{}');

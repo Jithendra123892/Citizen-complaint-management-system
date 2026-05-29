@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
-    var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || 'http://localhost:5000/api';
+    var API_URL = (window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) || '/api';
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
